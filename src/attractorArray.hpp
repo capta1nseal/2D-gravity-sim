@@ -5,6 +5,7 @@
 
 #include "attractor.hpp"
 #include "vec2.hpp"
+#include "camera.hpp"
 
 class AttractorArray
 {
@@ -12,7 +13,7 @@ public:
     AttractorArray()
     {
         attractorCount = 0;
-        clickRadius = 20.0;
+        clickRadius = 25.0;
         addMass = 50.0;
     }
 
@@ -21,21 +22,19 @@ public:
         mousePosition = mousePositionPtr;
     }
 
-    void leftClick()
+    void leftClick(Camera *camera)
     {
-        Vec2 position = Vec2(mousePosition->x, mousePosition->y);
+        Vec2 position = camera->unMapCoordinate(Vec2(mousePosition->x, mousePosition->y));
 
         for (int i = 0; i < attractorCount; i++)
         {
-            if (attractors[i].distanceFromPoint(position) < clickRadius)
+            if (attractors[i].distanceFromPoint(position) * camera->getScale() < clickRadius)
             {
                 // set index of attractor to be dragged
-            }
-            else
-            {
-                addAttractor(position);
+                return;
             }
         }
+        addAttractor(position);
     }
 
     void addAttractor(Vec2 position)
@@ -50,9 +49,9 @@ public:
         return attractorCount;
     }
 
-    Attractor getAttractor(int index)
+    Attractor *getAttractor(int index)
     {
-        return attractors[index];
+        return &attractors[index];
     }
 private:
     int attractorCount;

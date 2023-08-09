@@ -46,23 +46,31 @@ public:
         }
     }
 
+    void fetchTickData()
+    {
+        attractorCount = attractorArray->getAttractorCount();
+
+        attractorPointers.resize(attractorCount);
+        
+        for (int i = 0; i < attractorCount; i++)
+        {
+            attractorPointers[i] = attractorArray->getAttractor(i);
+        }
+    }
+
     void tick(double delta)
     {
-        int attractorCount = attractorArray->getAttractorCount();
-
         double dx;
         double dy;
         double forceVectorOverDistance;
-        Attractor attractor;
 
-        for (int i = 0; i < attractorCount; i++)
+        for (Attractor *currentAttractorPointer : attractorPointers)
         {
-            attractor = attractorArray->getAttractor(i);
             for (int j = 0; j < particleCount; j++)
             {
-                dx = attractor.position.x - positionArray[j].x;
-                dy = attractor.position.y - positionArray[j].y;
-                forceVectorOverDistance = 5000 / pow(Vec2(dx, dy).magnitude(), 3);
+                dx = currentAttractorPointer->position.x - positionArray[j].x;
+                dy = currentAttractorPointer->position.y - positionArray[j].y;
+                forceVectorOverDistance = (100.0 * currentAttractorPointer->mass) / pow(Vec2(dx, dy).magnitude(), 3);
                 velocityArray[j].add(Vec2(forceVectorOverDistance * dx, forceVectorOverDistance * dy));
             }
         }
@@ -89,6 +97,8 @@ private:
 
     Vec2 drawPosition;
 
+    int attractorCount;
+    std::vector<Attractor *> attractorPointers;
     AttractorArray *attractorArray;
 };
 

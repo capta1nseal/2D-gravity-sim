@@ -34,6 +34,8 @@ public:
         std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<double, std::chrono::_V2::steady_clock::period>> start;
         
         std::chrono::duration<double> delta;
+
+        int counter = 0;
         
         running = true;
         draw();
@@ -45,11 +47,14 @@ public:
 
             tick(delta.count());
 
-            std::cout << delta.count() << "\n";
+            if (counter % 60 == 0)
+                std::cout << delta.count() << "\n";
 
             draw();
 
             delta = now() - start;
+
+            counter += 1;
         }
 
         deInitializeSdl();
@@ -72,7 +77,7 @@ private:
 
     Input input;
 
-    int physicsSubsteps = 100;
+    int physicsSubsteps = 50;
 
     Camera camera;
 
@@ -119,20 +124,19 @@ private:
     void initializeAttractorArray()
     {
         attractorArray.setMousePosition(&mousePosition);
-
-        attractorArray.addAttractor(Vec2(-500, 0));
-        attractorArray.addAttractor(Vec2(500, 0));
     }
 
     void initializeParticles()
     {
         particles.setAttractorArray(&attractorArray);
-        particles.generateParticles(5, Vec2(-5, -5), Vec2(5, 5), Vec2(0, 100));
+        particles.generateParticles(1, Vec2(-50, -50), Vec2(50, 50), Vec2(0, 0));
     }
 
     void handleEvents()
     {
         SDL_PumpEvents();
+
+        SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
 
         while (SDL_PollEvent(&event))
         {
@@ -150,6 +154,12 @@ private:
                 default:
                     break;
                 }
+            case SDL_MOUSEBUTTONDOWN:
+                switch (event.button.button)
+                {
+                case SDL_BUTTON_LEFT:
+                    attractorArray.leftClick(&camera);
+                }
             default:
                 break;
             }
@@ -160,6 +170,8 @@ private:
 
     void tick(double delta)
     {
+        particles.fetchTickData();
+
         for (int i = 0; i < physicsSubsteps; i++)
         {
             particles.tick(delta / static_cast<double>(physicsSubsteps));

@@ -3,7 +3,7 @@ CFLAGS = -std=c++20 -O3
 LDFLAGS = -lSDL2main -lSDL2
 
 INFILE = src/main.cpp
-INCLUDES = src/camera.hpp src/input.hpp src/math.hpp src/particles.hpp src/simulationApplication.hpp src/vec2.hpp
+INCLUDES = src/attractor.hpp src/attractorArray.hpp src/camera.hpp src/input.hpp src/math.hpp src/particles.hpp src/simulationApplication.hpp src/vec2.hpp
 OUTFILE = bin/gravitysim
 
 $(OUTFILE): $(INFILE) $(INCLUDES)

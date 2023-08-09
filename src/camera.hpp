@@ -67,7 +67,7 @@ public:
     {
         return addVec2(
             &centreVector,
-            scaleVec2(subtractVec2(coordinate, &position), scale)
+            scaleVec2(subtractVec2(&coordinate, &position), scale)
         );
     }
     Vec2 mapCoordinate(Vec2 *coordinate)
@@ -77,6 +77,22 @@ public:
             scaleVec2(subtractVec2(coordinate, &position), scale)
         );
     }
+
+    Vec2 unMapCoordinate(Vec2 coordinate)
+    {
+        return addVec2(
+            scaleVec2(subtractVec2(&coordinate, &centreVector), 1.0 / scale),
+            &position
+        );
+    }
+    Vec2 unMapCoordinate(Vec2 *coordinate)
+    {
+        return addVec2(
+            scaleVec2(subtractVec2(coordinate, &centreVector), 1.0 / scale),
+            &position
+        );
+    }
+
 
     void tick(double delta)
     {
