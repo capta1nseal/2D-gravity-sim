@@ -1,8 +1,6 @@
 #ifndef _GRAVITYCAMERA_
 #define _GRAVITYCAMERA_
 
-#include <iostream>
-
 #include "vec2.hpp"
 #include "input.hpp"
 #include "math.hpp"

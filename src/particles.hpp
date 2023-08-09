@@ -34,7 +34,6 @@ public:
         }
 
         positionArray.reserve(particleCount);
-        previousPositionArray.reserve(particleCount);
         velocityArray.reserve(particleCount);
 
         for (double x = topLeft.x; x < bottomRight.x; x += 1.0 / linearDensity)
@@ -42,7 +41,6 @@ public:
             for (double y = topLeft.y; y < bottomRight.y; y += 1.0 / linearDensity)
             {
                 positionArray.push_back(Vec2(x, y));
-                previousPositionArray.push_back(Vec2(x, y));
                 velocityArray.push_back(initialVelocity);
             }
         }
@@ -70,7 +68,6 @@ public:
         }
         for (int i = 0; i < particleCount; i++)
         {
-            previousPositionArray[i].set(&positionArray[i]);
             positionArray[i].add(velocityArray[i].scaleInplace(delta));
         }
     }
@@ -81,19 +78,16 @@ public:
         for (int i = 0; i < particleCount; i++)
         {
             drawPosition.set(camera->mapCoordinate(&positionArray[i]));
-            drawPreviousPosition.set(camera->mapCoordinate(&previousPositionArray[i]));
 
-            SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, drawPreviousPosition.x, drawPreviousPosition.y);
+            SDL_RenderDrawPointF(renderer, drawPosition.x, drawPosition.y);
         }
     }
 private:
     int particleCount;
     std::vector<Vec2> positionArray;
-    std::vector<Vec2> previousPositionArray;
     std::vector<Vec2> velocityArray;
 
     Vec2 drawPosition;
-    Vec2 drawPreviousPosition;
 
     AttractorArray *attractorArray;
 };

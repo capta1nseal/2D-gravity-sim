@@ -120,13 +120,14 @@ private:
     {
         attractorArray.setMousePosition(&mousePosition);
 
-        attractorArray.addAttractor(Vec2(0, 0));
+        attractorArray.addAttractor(Vec2(-500, 0));
+        attractorArray.addAttractor(Vec2(500, 0));
     }
 
     void initializeParticles()
     {
         particles.setAttractorArray(&attractorArray);
-        particles.generateParticles(0.75, Vec2(-50, -550), Vec2(50, -450), Vec2(200, 0));
+        particles.generateParticles(5, Vec2(-5, -5), Vec2(5, 5), Vec2(0, 100));
     }
 
     void handleEvents()

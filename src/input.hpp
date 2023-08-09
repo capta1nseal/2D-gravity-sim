@@ -1,7 +1,6 @@
 #ifndef _GRAVITYINPUT_
 #define _GRAVITYINPUT_
 
-#include <iostream>
 #include <array>
 
 #include <SDL2/SDL_scancode.h>
