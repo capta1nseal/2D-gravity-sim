@@ -74,6 +74,7 @@ private:
     const Uint8 *keyboardState;
     
     SDL_Point mousePosition;
+    Vec2 worldMousePosition;
 
     Input input;
 
@@ -123,13 +124,13 @@ private:
 
     void initializeAttractorArray()
     {
-        attractorArray.setMousePosition(&mousePosition);
+        attractorArray.setMousePosition(&mousePosition, &worldMousePosition);
     }
 
     void initializeParticles()
     {
         particles.setAttractorArray(&attractorArray);
-        particles.generateParticles(1, Vec2(-50, -50), Vec2(50, 50), Vec2(0, 0));
+        particles.generateParticles(1.0, Vec2(-50, -50), Vec2(50, 50), Vec2(0, 0));
     }
 
     void handleEvents()
@@ -137,6 +138,8 @@ private:
         SDL_PumpEvents();
 
         SDL_GetMouseState(&mousePosition.x, &mousePosition.y);
+
+        worldMousePosition = camera.unMapCoordinate(Vec2(mousePosition.x, mousePosition.y));
 
         while (SDL_PollEvent(&event))
         {
@@ -159,6 +162,12 @@ private:
                 {
                 case SDL_BUTTON_LEFT:
                     attractorArray.leftClick(&camera);
+                    break;
+                case SDL_BUTTON_RIGHT:
+                    attractorArray.rightClick();
+                    break;
+                default:
+                    break;
                 }
             default:
                 break;
@@ -170,6 +179,8 @@ private:
 
     void tick(double delta)
     {
+        attractorArray.tick();
+
         particles.fetchTickData();
 
         for (int i = 0; i < physicsSubsteps; i++)
