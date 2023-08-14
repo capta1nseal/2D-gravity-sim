@@ -124,12 +124,6 @@ private:
     void initializeAttractorArray()
     {
         attractorArray.setMousePosition(&mousePosition);
-<<<<<<< Updated upstream
-=======
-
-        attractorArray.addAttractor(Vec2(-500, 0));
-        attractorArray.addAttractor(Vec2( 500, 0));
->>>>>>> Stashed changes
     }
 
     void initializeParticles()
