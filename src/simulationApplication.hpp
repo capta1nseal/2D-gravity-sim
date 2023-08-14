@@ -38,6 +38,7 @@ public:
         int counter = 0;
         
         running = true;
+        clearWindowTexture();
         draw();
         while (running)
         {
@@ -66,6 +67,7 @@ private:
 
     SDL_DisplayMode displayMode;
     SDL_Window *window;
+    SDL_Texture *windowTexture;
     SDL_Renderer *renderer;
 
     double framerate;
@@ -102,7 +104,9 @@ private:
             displayWidth, displayHeight,
             windowFlags);
         
-        Uint32 renderFlags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+        windowTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, displayWidth, displayHeight);
+
+        Uint32 renderFlags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
         renderer = SDL_CreateRenderer(window, -1, renderFlags);
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -191,13 +195,24 @@ private:
         camera.tick(delta);
     }
 
-    void draw()
+    void clearWindowTexture()
     {
+        SDL_SetRenderTarget(renderer, windowTexture);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+        SDL_SetRenderTarget(renderer, NULL);
+    }
 
+    void draw()
+    {
+        SDL_SetRenderTarget(renderer, windowTexture);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 63);
+        SDL_RenderFillRect(renderer, NULL);
+        
         particles.draw(renderer, &camera);
 
+        SDL_SetRenderTarget(renderer, NULL);
+        SDL_RenderCopy(renderer, windowTexture, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
 
@@ -205,6 +220,7 @@ private:
     {
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
+        SDL_DestroyTexture(windowTexture);
         SDL_Quit();
     }
 };
