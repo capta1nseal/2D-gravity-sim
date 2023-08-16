@@ -187,7 +187,7 @@ private:
 
         particles.fetchTickData();
 
-        for (int i = 0; i < physicsSubsteps; i++)
+        for (unsigned int i = 0; i < physicsSubsteps; i++)
         {
             particles.tick(delta / static_cast<double>(physicsSubsteps));
         }

@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include <SDL2/SDL_rect.h>
+
 #include "attractor.hpp"
 #include "vec2.hpp"
 #include "camera.hpp"
@@ -46,7 +48,7 @@ public:
         double closestAttractorDistance = clickRadius;
         double distance;
 
-        for (int i = 0; i < attractorCount; i++)
+        for (unsigned int i = 0; i < attractorCount; i++)
         {
             distance = attractors[i].distanceFromPoint(worldMousePosition);
             if (distance * camera->getScale() < closestAttractorDistance)
@@ -79,7 +81,7 @@ public:
         double closestAttractorDistance = INFINITY;
         double distance;
         
-        for (int i = 0; i < attractorCount; i++)
+        for (unsigned int i = 0; i < attractorCount; i++)
         {
             distance = attractors[i].distanceFromPoint(worldMousePosition);
             if (distance < closestAttractorDistance)

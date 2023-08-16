@@ -10,7 +10,7 @@ class Input
 public:
     Input()
     {
-        for (int i = 0; i < inputArraySize; i++)
+        for (unsigned int i = 0; i < inputArraySize; i++)
             inputArray[i] = false;
     }
 
@@ -21,7 +21,7 @@ public:
 
     void updateInputs()
     {
-        for (int i = 0; i < inputArraySize; i++)
+        for (unsigned int i = 0; i < inputArraySize; i++)
             inputArray[i] = false;
         if (keyboardState[SDL_SCANCODE_UP])
             inputArray[0] = true;

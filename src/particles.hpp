@@ -54,12 +54,12 @@ public:
 
         attractorPointers.resize(attractorCount);
         
-        for (int i = 0; i < particleCount; i++)
+        for (unsigned int i = 0; i < particleCount; i++)
         {
             previousPositionArray[i] = positionArray[i];
         }
 
-        for (int i = 0; i < attractorCount; i++)
+        for (unsigned int i = 0; i < attractorCount; i++)
         {
             attractorPointers[i] = attractorArray->getAttractor(i);
         }
@@ -67,21 +67,19 @@ public:
 
     void tick(double delta)
     {
-        double dx;
-        double dy;
         double forceVectorOverDistance;
+        Vec2 dPosition;
 
         for (Attractor *currentAttractorPointer : attractorPointers)
         {
             for (int j = 0; j < particleCount; j++)
             {
-                dx = currentAttractorPointer->position.x - positionArray[j].x;
-                dy = currentAttractorPointer->position.y - positionArray[j].y;
-                forceVectorOverDistance = (100.0 * currentAttractorPointer->mass) / pow(Vec2(dx, dy).magnitude(), 3);
-                velocityArray[j].add(Vec2(forceVectorOverDistance * dx, forceVectorOverDistance * dy));
+                dPosition = subtractVec2(currentAttractorPointer->position, positionArray[j]);
+                forceVectorOverDistance = (100.0 * currentAttractorPointer->mass) / pow(dPosition.magnitude(), 3);
+                velocityArray[j].add(dPosition.scaleInplace(forceVectorOverDistance));
             }
         }
-        for (int i = 0; i < particleCount; i++)
+        for (unsigned int i = 0; i < particleCount; i++)
         {
             positionArray[i].add(velocityArray[i].scaleInplace(delta));
         }
@@ -90,7 +88,7 @@ public:
     void draw(SDL_Renderer *renderer, Camera *camera)
     {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        for (int i = 0; i < particleCount; i++)
+        for (unsigned int i = 0; i < particleCount; i++)
         {
             drawPosition.set(camera->mapCoordinate(&positionArray[i]));
             previousDrawPosition.set(camera->mapCoordinate(&previousPositionArray[i]));
@@ -101,7 +99,7 @@ public:
         }
     }
 private:
-    int particleCount;
+    unsigned int particleCount;
     std::vector<Vec2> positionArray;
     std::vector<Vec2> previousPositionArray;
     std::vector<Vec2> velocityArray;

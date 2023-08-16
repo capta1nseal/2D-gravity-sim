@@ -1,6 +1,6 @@
 #include "simulationApplication.hpp"
 
-int main(int argc, char* argv[])
+int main()
 {
     SimulationApplication simulationApplication = SimulationApplication();
 
