@@ -8,6 +8,7 @@
 Camera::Camera()
 {
     scale = 0.1;
+    previousScale = 0.1;
     targetScale = 1.0;
     scaleApproachQuotient = 2.5;
 
@@ -32,6 +33,7 @@ void Camera::setInput(Input *inputPtr)
 void Camera::setPosition(Vec2 newPosition)
 {
     targetPosition.set(&newPosition);
+    previousPosition.set(&newPosition);
     position.set(&newPosition);
 }
 
@@ -49,6 +51,7 @@ void Camera::setScale(double newScale)
 {
     targetScale = clamp(newScale, minScale, maxScale);
     scale = targetScale;
+    previousScale = targetScale;
 }
 
 void Camera::setTargetScale(double newTargetScale)
@@ -73,6 +76,21 @@ Vec2 Camera::mapCoordinate(Vec2 *coordinate)
     return addVec2(
         &centreVector,
         scaleVec2(subtractVec2(coordinate, &position), scale)
+    );
+}
+
+Vec2 Camera::mapPreviousCoordinate(Vec2 coordinate)
+{
+    return addVec2(
+        &centreVector,
+        scaleVec2(subtractVec2(&coordinate, &previousPosition), previousScale)
+    );
+}
+Vec2 Camera::mapPreviousCoordinate(Vec2 *coordinate)
+{
+    return addVec2(
+        &centreVector,
+        scaleVec2(subtractVec2(coordinate, &previousPosition), previousScale)
     );
 }
 
@@ -107,7 +125,9 @@ void Camera::tick(double delta)
     if (input->leftPressed())
         targetPosition.add(Vec2(-1.0 * motionSpeed * delta * (1 / scale), 0.0));
 
+    previousPosition.set(&position);
     position.add(scaleVec2(subtractVec2(&targetPosition, &position), positionApproachQuotient * delta));
+    previousScale = scale;
     scale += (targetScale - scale) * scaleApproachQuotient * delta;
 }
 

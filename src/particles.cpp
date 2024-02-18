@@ -87,7 +87,7 @@ void Particles::draw(SDL_Renderer *renderer, Camera *camera)
     for (int i = 0; i < particleCount; i++)
     {
         drawPosition.set(camera->mapCoordinate(&positionArray[i]));
-        previousDrawPosition.set(camera->mapCoordinate(&previousPositionArray[i]));
+        previousDrawPosition.set(camera->mapPreviousCoordinate(&previousPositionArray[i]));
         if (((drawPosition.x < 0 or drawPosition.x > 1919) or (drawPosition.y < 0 or drawPosition.y > 1199)) and ((previousDrawPosition.x < 0 or previousDrawPosition.x > 1919) or (previousDrawPosition.y < 0 or previousDrawPosition.y > 1199)) or (subtractVec2(drawPosition, previousDrawPosition).magnitude() > 10000.0))
             continue;
         

@@ -27,6 +27,9 @@ public:
     Vec2 mapCoordinate(Vec2 coordinate);
     Vec2 mapCoordinate(Vec2 *coordinate);
 
+    Vec2 mapPreviousCoordinate(Vec2 coordinate);
+    Vec2 mapPreviousCoordinate(Vec2 *coordinate);
+
     Vec2 unMapCoordinate(Vec2 coordinate);
     Vec2 unMapCoordinate(Vec2 *coordinate);
 
@@ -35,10 +38,12 @@ public:
 private:
     Vec2 centreVector;
     Vec2 position;
+    Vec2 previousPosition;
     Vec2 targetPosition;
     double positionApproachQuotient;
 
     double scale;
+    double previousScale;
     double targetScale;
     double scaleApproachQuotient;
 
