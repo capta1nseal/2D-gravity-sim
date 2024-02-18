@@ -1,8 +1,8 @@
 #include "simulationApplication.hpp"
 
-int main(int argc, char* argv[])
+int main()
 {
-    SimulationApplication simulationApplication = SimulationApplication();
+    auto simulationApplication = SimulationApplication();
 
     simulationApplication.run();
 }
