@@ -107,10 +107,10 @@ void GravitySimApplication::initializeCamera()
 void GravitySimApplication::initializeSimulation()
 {
     // The following 4 lines create a cyclic spinning pattern
-    //simulation.addAttractor(Vec2(0.0, -500.0), Vec2(200.0, 0.0), 50.0);
-    //simulation.addAttractor(Vec2(0.0, 500.0), Vec2(-200.0, 0.0), 50.0);
-    //simulation.addAttractor(Vec2(500.0, 0.0), Vec2(0.0, 200.0), 50.0);
-    //simulation.addAttractor(Vec2(-500.0, 0.0), Vec2(0.0, -200.0), 50.0);
+    simulation.addAttractor(Vec2(0.0, -500.0), Vec2(200.0, 0.0), 50.0);
+    simulation.addAttractor(Vec2(0.0, 500.0), Vec2(-200.0, 0.0), 50.0);
+    simulation.addAttractor(Vec2(500.0, 0.0), Vec2(0.0, 200.0), 50.0);
+    simulation.addAttractor(Vec2(-500.0, 0.0), Vec2(0.0, -200.0), 50.0);
 }
 
 std::chrono::steady_clock::time_point GravitySimApplication::now()
