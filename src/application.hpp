@@ -1,23 +1,24 @@
-#ifndef _GRAVITYSIMULATIONAPPLICATION_
-#define _GRAVITYSIMULATIONAPPLICATION_
+#ifndef _GRAVITYSIMAPPLICATION_
+#define _GRAVITYSIMAPPLICATION_
 
 #include <iostream>
 #include <cmath>
 #include <chrono>
+#include <thread>
+#include <mutex>
 
 #include <SDL2/SDL.h>
 
 #include "camera.hpp"
 #include "vec2.hpp"
-#include "attractorArray.hpp"
+#include "simulation.hpp"
 #include "particles.hpp"
 
-std::chrono::_V2::steady_clock::time_point now();
-
-class SimulationApplication
+class GravitySimApplication
 {
 public:
-    SimulationApplication();
+    GravitySimApplication();
+    ~GravitySimApplication();
 
     void run();
 
@@ -41,23 +42,24 @@ private:
 
     Input input;
 
-    int physicsSubsteps = 50;
-
     Camera camera;
 
-    AttractorArray attractorArray;
+    GravitySimSimulation simulation;
 
-    Particles particles;
+    std::thread simulationThread;
+    
+    std::mutex renderMutex;
 
     void initializeSdl();
+    void destroySdl();
 
     void initializeInput();
 
     void initializeCamera();
 
-    void initializeAttractorArray();
+    void initializeSimulation();
 
-    void initializeParticles();
+    std::chrono::steady_clock::time_point now();
 
     void handleEvents();
 
@@ -66,8 +68,6 @@ private:
     void clearWindowTexture();
 
     void draw();
-
-    void deInitializeSdl();
 };
 
 #endif

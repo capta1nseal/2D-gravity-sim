@@ -1,5 +1,5 @@
-#ifndef _GRAVITYINPUT_
-#define _GRAVITYINPUT_
+#ifndef _GRAVITYSIMINPUT_
+#define _GRAVITYSIMINPUT_
 
 #include <array>
 

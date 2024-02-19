@@ -1,5 +1,5 @@
-#ifndef _GRAVITYATTRACTOR_
-#define _GRAVITYATTRACTOR_
+#ifndef _GRAVITYSIMATTRACTOR_
+#define _GRAVITYSIMATTRACTOR_
 
 #include "vec2.hpp"
 
@@ -9,11 +9,12 @@ struct Attractor
     double mass;
 
     Attractor();
-
     Attractor(Vec2 initialPosition, double initialMass);
-
-    double distanceFromPoint(Vec2 point);
-    double distanceFromPoint(Vec2 *point);
+    
+    double distanceFrom(Vec2 otherPosition);
+    double distanceFrom(Vec2 *otherPosition);
+    double distanceFrom(Attractor otherAttractor);
+    double distanceFrom(Attractor *otherAttractor);
 };
 
 #endif

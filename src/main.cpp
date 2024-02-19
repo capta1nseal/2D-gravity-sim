@@ -1,8 +1,8 @@
-#include "simulationApplication.hpp"
+#include "application.hpp"
 
 int main()
 {
-    auto simulationApplication = SimulationApplication();
+    auto gravitySimApplication = GravitySimApplication();
 
-    simulationApplication.run();
+    gravitySimApplication.run();
 }
