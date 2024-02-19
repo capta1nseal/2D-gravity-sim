@@ -1,5 +1,5 @@
-#ifndef _GRAVITYMATH_
-#define _GRAVITYMATH_
+#ifndef _GRAVITYSIMMATH_
+#define _GRAVITYSIMMATH_
 
 double clamp(double value, double min, double max);
 

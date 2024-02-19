@@ -1,5 +1,5 @@
-#ifndef _GRAVITYCAMERA_
-#define _GRAVITYCAMERA_
+#ifndef _GRAVITYSIMCAMERA_
+#define _GRAVITYSIMCAMERA_
 
 #include "vec2.hpp"
 #include "input.hpp"

@@ -1,41 +1,39 @@
-#ifndef _GRAVITYPARTICLES_
-#define _GRAVITYPARTICLES_
+#ifndef _GRAVITYSIMPARTICLES_
+#define _GRAVITYSIMPARTICLES_
 
 #include <vector>
 #include <cmath>
 
-#include <SDL2/SDL_render.h>
-
 #include "vec2.hpp"
+#include "attractor.hpp"
 #include "camera.hpp"
-#include "attractorArray.hpp"
 
 class Particles
 {
 public:
     Particles();
 
-    void setAttractorArray(AttractorArray *attractorArrayPtr);
-
     void generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity);
 
-    void fetchTickData();
+    void getFrameData(unsigned int &particleCount, std::vector<Vec2> &positionArray, std::vector<Vec2> &previousPositionArray, unsigned int &attractorCount, std::vector<Attractor> &attractorArray, std::vector<Attractor> &previousAttractorArray);
 
     void tick(double delta);
 
-    void draw(SDL_Renderer *renderer, Camera *camera);
+    void addAttractor(Vec2 position, double mass);
+    void addAttractor(Vec2 position, Vec2 velocity, double mass);
+
+    void storePreviousPositions();
+
 private:
-    int particleCount;
-    std::vector<Vec2> positionArray;
-    std::vector<Vec2> previousPositionArray;
-    std::vector<Vec2> velocityArray;
+    int m_particleCount;
+    std::vector<Vec2> m_positionArray;
+    std::vector<Vec2> m_previousPositionArray;
+    std::vector<Vec2> m_velocityArray;
 
-    Vec2 drawPosition;
-    Vec2 previousDrawPosition;
-
-    int attractorCount;
-    std::vector<Attractor *> attractorPointers;
-    AttractorArray *attractorArray;
+    int m_attractorCount;
+    std::vector<Attractor> m_attractorArray;
+    std::vector<Attractor> m_previousAttractorArray;
+    std::vector<Vec2> m_attractorVelocityArray;
 };
 
 #endif

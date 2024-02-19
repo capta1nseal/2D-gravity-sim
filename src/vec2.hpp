@@ -1,5 +1,5 @@
-#ifndef _GRAVITYVEC2_
-#define _GRAVITYVEC2_
+#ifndef _GRAVITYSIMVEC2_
+#define _GRAVITYSIMVEC2_
 
 #include <cmath>
 
