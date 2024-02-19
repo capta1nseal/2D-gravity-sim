@@ -7,6 +7,9 @@
 #include <thread>
 
 #include <SDL2/SDL.h>
+#include <GL/glew.h>
+#include <SDL2/SDL_opengl.h>
+#include <GL/glu.h>
 
 #include "camera.hpp"
 #include "vec2.hpp"
@@ -26,8 +29,12 @@ private:
 
     SDL_DisplayMode displayMode;
     SDL_Window *window;
-    SDL_Texture *windowTexture;
-    SDL_Renderer *renderer;
+
+    SDL_GLContext gContext;
+    GLuint gProgramID;
+    GLint gVertexPos2DLocation = -1;
+    GLuint gVBO = 0;
+    GLuint gIBO = 0;
 
     double framerate;
 
@@ -45,8 +52,8 @@ private:
 
     std::thread simulationThread;
 
-    void initializeSdl();
-    void destroySdl();
+    void initializeGraphics();
+    void destroyGraphics();
 
     void initializeInput();
 

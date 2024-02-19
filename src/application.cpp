@@ -6,6 +6,9 @@
 #include <thread>
 
 #include <SDL2/SDL.h>
+#include <GL/glew.h>
+#include <SDL2/SDL_opengl.h>
+#include <GL/glu.h>
 
 #include "camera.hpp"
 #include "vec2.hpp"
@@ -13,19 +16,20 @@
 
 GravitySimApplication::GravitySimApplication()
 {
-    initializeSdl();
+    initializeGraphics();
     initializeInput();
     initializeSimulation();
     initializeCamera();
 }
 GravitySimApplication::~GravitySimApplication()
 {
-    destroySdl();
+    destroyGraphics();
 }
 
 
 void GravitySimApplication::run()
 {
+    std::cout << "test reached run\n";
     std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<double, std::chrono::_V2::steady_clock::period>> start;
         
     std::chrono::duration<double> delta(0.0166667);
@@ -59,35 +63,96 @@ void GravitySimApplication::run()
     simulationThread.join();
 }
 
-void GravitySimApplication::initializeSdl()
+void GravitySimApplication::initializeGraphics()
 {
     SDL_Init(SDL_INIT_EVERYTHING);
+    keyboardState = SDL_GetKeyboardState(NULL);
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     SDL_GetCurrentDisplayMode(0, &displayMode);
 
     displayWidth = displayMode.w;
     displayHeight = displayMode.h;
 
-    Uint32 windowFlags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+    Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP;
     window = SDL_CreateWindow(
         "gravitysim",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         displayWidth, displayHeight,
         windowFlags);
     
-    windowTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, displayWidth, displayHeight);
+    gContext = SDL_GL_CreateContext(window);
 
-    Uint32 renderFlags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE;
-    renderer = SDL_CreateRenderer(window, -1, renderFlags);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    glewInit();
 
-    keyboardState = SDL_GetKeyboardState(NULL);
+    SDL_GL_SetSwapInterval(1);
+
+    std::cout << "test2\n";
+
+    gProgramID = glCreateProgram();
+
+    std::cout << "test3\n";
+
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+    const GLchar *vertexShaderSource[] =
+    {
+        "#version 140\nin vec2 LVertexPos2D; void main() { gl_Position = vec4( LVertexPos2D.x, LVertexPos2D.y, 0, 1 ); }"
+    };
+
+    glShaderSource(vertexShader, 1, vertexShaderSource, NULL);
+
+    glCompileShader(vertexShader);
+
+    glAttachShader(gProgramID, vertexShader);
+
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    const GLchar *fragmentShaderSource[] =
+    {
+        "#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }"
+    };
+
+    glShaderSource(fragmentShader, 1, fragmentShaderSource, NULL);
+
+    glCompileShader(fragmentShader);
+
+    glAttachShader(gProgramID, fragmentShader);
+
+    glLinkProgram(gProgramID);
+
+    gVertexPos2DLocation = glGetAttribLocation(gProgramID, "LVertexPos2D");
+
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+
+    GLfloat vertexData[] =
+    {
+        -0.5f, -0.5f,
+         0.5f, -0.5f,
+         0.5f,  0.5f,
+        -0.5f,  0.5f
+    };
+
+    GLuint indexData[] = {0, 1, 2, 3};
+
+    glGenBuffers(1, &gVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+    glBufferData(GL_ARRAY_BUFFER, 2 * 4 * sizeof(GLfloat), vertexData, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &gIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), indexData, GL_STATIC_DRAW);
 }
-void GravitySimApplication::destroySdl()
+void GravitySimApplication::destroyGraphics()
 {
-    SDL_DestroyRenderer(renderer);
+    glDeleteProgram(gProgramID);
+
     SDL_DestroyWindow(window);
-    SDL_DestroyTexture(windowTexture);
+    window = NULL;
+
     SDL_Quit();
 }
 
@@ -171,18 +236,11 @@ void GravitySimApplication::tick(double delta)
 
 void GravitySimApplication::clearWindowTexture()
 {
-    SDL_SetRenderTarget(renderer, windowTexture);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    SDL_SetRenderTarget(renderer, NULL);
 }
 
 void GravitySimApplication::draw()
 {
-    SDL_SetRenderTarget(renderer, windowTexture);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 63);
-    SDL_RenderFillRect(renderer, NULL);
-
+    /*
     unsigned int particleCount;
     std::vector<Vec2> positionArray, previousPositionArray;
     unsigned int attractorCount;
@@ -194,7 +252,7 @@ void GravitySimApplication::draw()
     Vec2 drawPosition;
     Vec2 previousDrawPosition;
     
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     for (unsigned int i = 0; i < particleCount; i++)
     {
         drawPosition.set(camera.mapCoordinate(&positionArray[i]));
@@ -202,10 +260,10 @@ void GravitySimApplication::draw()
         if (((drawPosition.x < 0 or drawPosition.x > displayWidth - 1) or (drawPosition.y < 0 or drawPosition.y > displayHeight - 1)) and ((previousDrawPosition.x < 0 or previousDrawPosition.x > displayWidth - 1) or (previousDrawPosition.y < 0 or previousDrawPosition.y > displayHeight - 1)) or (subtractVec2(drawPosition, previousDrawPosition).magnitude() > 10000.0))
             continue;
         
-        SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
+        //SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
     }
 
-    SDL_SetRenderDrawColor(renderer, 191, 127, 15, 255);
+    //SDL_SetRenderDrawColor(renderer, 191, 127, 15, 255);
     for (unsigned int i = 0; i < attractorCount; i++)
     {
         drawPosition.set(camera.mapCoordinate(&attractorArray[i].position));
@@ -213,10 +271,24 @@ void GravitySimApplication::draw()
         if (((drawPosition.x < 0 or drawPosition.x > displayWidth - 1) or (drawPosition.y < 0 or drawPosition.y > displayHeight - 1)) and ((previousDrawPosition.x < 0 or previousDrawPosition.x > displayWidth - 1) or (previousDrawPosition.y < 0 or previousDrawPosition.y > displayHeight - 1)) or (subtractVec2(drawPosition, previousDrawPosition).magnitude() > 1000.0))
             continue;
         
-        SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
+        //SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
+    }
+    */
+    {
+        glUseProgram(gProgramID);
+
+        glEnableVertexAttribArray(gVertexPos2DLocation);
+
+        glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+        glVertexAttribPointer(gVertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
+        glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL);
+
+        glDisableVertexAttribArray(gVertexPos2DLocation);
+
+        glUseProgram(NULL);
     }
 
-    SDL_SetRenderTarget(renderer, NULL);
-    SDL_RenderCopy(renderer, windowTexture, NULL, NULL);
-    SDL_RenderPresent(renderer);
+    SDL_GL_SwapWindow(window);
 }
