@@ -6,7 +6,6 @@
 
 #include "vec2.hpp"
 #include "attractor.hpp"
-#include "camera.hpp"
 
 class Particles
 {
@@ -22,6 +21,8 @@ public:
     void addAttractor(Vec2 position, double mass);
     void addAttractor(Vec2 position, Vec2 velocity, double mass);
 
+    void removeAttractor(Vec2 position);
+
     void storePreviousPositions();
 
 private:
@@ -34,6 +35,8 @@ private:
     std::vector<Attractor> m_attractorArray;
     std::vector<Attractor> m_previousAttractorArray;
     std::vector<Vec2> m_attractorVelocityArray;
+
+    void removeAttractor(unsigned int index);
 };
 
 #endif

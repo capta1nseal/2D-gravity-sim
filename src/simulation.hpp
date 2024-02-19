@@ -19,6 +19,8 @@ public:
     void addAttractor(Vec2 position, double mass);
     void addAttractor(Vec2 position, Vec2 velocity, double mass);
 
+    void removeAttractor(Vec2 position);
+
     void storePreviousPositions();
 
 private:

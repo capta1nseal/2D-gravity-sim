@@ -4,13 +4,12 @@
 #include <cmath>
 #include <chrono>
 #include <thread>
-#include <mutex>
 
 #include <SDL2/SDL.h>
 
 #include "camera.hpp"
 #include "vec2.hpp"
-#include "particles.hpp"
+#include "simulation.hpp"
 
 GravitySimApplication::GravitySimApplication()
 {
@@ -29,7 +28,7 @@ void GravitySimApplication::run()
 {
     std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<double, std::chrono::_V2::steady_clock::period>> start;
         
-    std::chrono::duration<double> delta(0.016);
+    std::chrono::duration<double> delta(0.0166667);
 
     int frameCounter = 0;
     
@@ -107,10 +106,11 @@ void GravitySimApplication::initializeCamera()
 
 void GravitySimApplication::initializeSimulation()
 {
-    simulation.addAttractor(Vec2(0.0, -500.0), Vec2(200.0, 0.0), 50.0);
-    simulation.addAttractor(Vec2(0.0, 500.0), Vec2(-200.0, 0.0), 50.0);
-    simulation.addAttractor(Vec2(500.0, 0.0), Vec2(0.0, 200.0), 50.0);
-    simulation.addAttractor(Vec2(-500.0, 0.0), Vec2(0.0, -200.0), 50.0);
+    // The following 4 lines create a cyclic spinning pattern
+    //simulation.addAttractor(Vec2(0.0, -500.0), Vec2(200.0, 0.0), 50.0);
+    //simulation.addAttractor(Vec2(0.0, 500.0), Vec2(-200.0, 0.0), 50.0);
+    //simulation.addAttractor(Vec2(500.0, 0.0), Vec2(0.0, 200.0), 50.0);
+    //simulation.addAttractor(Vec2(-500.0, 0.0), Vec2(0.0, -200.0), 50.0);
 }
 
 std::chrono::steady_clock::time_point GravitySimApplication::now()
@@ -147,10 +147,10 @@ void GravitySimApplication::handleEvents()
             switch (event.button.button)
             {
             case SDL_BUTTON_LEFT:
-                // simulation.addAttractor();
+                simulation.addAttractor(worldMousePosition, 50.0);
                 break;
             case SDL_BUTTON_RIGHT:
-                // simulation.removeAttractor();
+                simulation.removeAttractor(worldMousePosition);
                 break;
             default:
                 break;

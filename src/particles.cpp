@@ -1,12 +1,10 @@
 #include "particles.hpp"
 
-#include <iostream>
-
 #include <vector>
 #include <cmath>
 
 #include "vec2.hpp"
-#include "camera.hpp"
+#include "attractor.hpp"
 
 Particles::Particles() {}
 
@@ -110,10 +108,44 @@ void Particles::addAttractor(Vec2 position, Vec2 velocity, double mass)
     m_attractorVelocityArray.push_back(velocity);
 }
 
+void Particles::removeAttractor(Vec2 position)
+{
+    if (m_attractorCount == 0) return;
+
+    unsigned int closestIndex = 0;
+    double closestDistance = INFINITY;
+
+    for (unsigned int i = 0; i < m_attractorCount; i++)
+    {
+        double distance = subtractVec2(m_attractorArray[i].position, position).magnitude();
+        if (distance < closestDistance)
+        {
+            closestIndex = i;
+            closestDistance = distance;
+        }
+    }
+
+    removeAttractor(closestIndex);
+}
+
 void Particles::storePreviousPositions()
 {
     m_previousPositionArray.resize(m_particleCount);
     m_previousAttractorArray.resize(m_attractorCount);
+
     m_previousPositionArray = m_positionArray;
     m_previousAttractorArray = m_attractorArray;
+}
+
+void Particles::removeAttractor(unsigned int index)
+{
+    m_attractorCount -= 1;
+
+    m_attractorArray.erase(m_attractorArray.begin() + index);
+    m_previousAttractorArray.erase(m_previousAttractorArray.begin() + index);
+    m_attractorVelocityArray.erase(m_attractorVelocityArray.begin() + index);
+
+    m_attractorArray.resize(m_attractorCount);
+    m_previousAttractorArray.resize(m_attractorCount);
+    m_attractorVelocityArray.resize(m_attractorCount);
 }

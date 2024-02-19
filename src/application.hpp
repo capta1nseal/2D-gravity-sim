@@ -5,14 +5,12 @@
 #include <cmath>
 #include <chrono>
 #include <thread>
-#include <mutex>
 
 #include <SDL2/SDL.h>
 
 #include "camera.hpp"
 #include "vec2.hpp"
 #include "simulation.hpp"
-#include "particles.hpp"
 
 class GravitySimApplication
 {
@@ -21,7 +19,6 @@ public:
     ~GravitySimApplication();
 
     void run();
-
 
 private:
     bool running;
@@ -47,8 +44,6 @@ private:
     GravitySimSimulation simulation;
 
     std::thread simulationThread;
-    
-    std::mutex renderMutex;
 
     void initializeSdl();
     void destroySdl();

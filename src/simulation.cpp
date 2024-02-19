@@ -1,7 +1,5 @@
 #include "simulation.hpp"
 
-#include <iostream>
-
 #include <mutex>
 #include <chrono>
 
@@ -19,14 +17,11 @@ void GravitySimSimulation::simulationLoop()
 
     int tickCounter = 0;
 
-    std::cout << "test3\n";
-
     running = true;
     while (running)
     {
         start = now();
 
-        // std::cout << "test4\n";
         tick(delta.count());
 
         delta = now() - start;
@@ -53,6 +48,11 @@ void GravitySimSimulation::addAttractor(Vec2 position, double mass)
 void GravitySimSimulation::addAttractor(Vec2 position, Vec2 velocity, double mass)
 {
     particles.addAttractor(position, velocity, mass);
+}
+
+void GravitySimSimulation::removeAttractor(Vec2 position)
+{
+    particles.removeAttractor(position);
 }
 
 void GravitySimSimulation::storePreviousPositions()
