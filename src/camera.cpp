@@ -7,16 +7,16 @@
 
 Camera::Camera()
 {
-    scale = 0.1;
-    previousScale = 0.1;
-    targetScale = 1.0;
+    scale = 0.00001;
+    previousScale = 0.00001;
+    targetScale = 0.01;
     scaleApproachQuotient = 2.5;
 
-    motionSpeed = 500.0;
+    motionSpeed = 1.0;
     positionApproachQuotient = 5.0;
 
     zoomFactor = 2.5;
-    minScale = 0.1;
+    minScale = 0.00001;
     maxScale = 10.0;
 }
 
@@ -66,32 +66,24 @@ double Camera::getScale()
 
 Vec2 Camera::mapCoordinate(Vec2 coordinate)
 {
-    return addVec2(
-        &centreVector,
-        scaleVec2(subtractVec2(&coordinate, &position), scale)
-    );
+    return mapCoordinate(&coordinate);
 }
 Vec2 Camera::mapCoordinate(Vec2 *coordinate)
 {
-    return addVec2(
-        &centreVector,
-        scaleVec2(subtractVec2(coordinate, &position), scale)
-    );
+    Vec2 mappedCoordinate = scaleVec2(subtractVec2(coordinate, &position), scale);
+    mappedCoordinate.y *= centreVector.x / centreVector.y;
+    return mappedCoordinate;
 }
 
 Vec2 Camera::mapPreviousCoordinate(Vec2 coordinate)
 {
-    return addVec2(
-        &centreVector,
-        scaleVec2(subtractVec2(&coordinate, &previousPosition), previousScale)
-    );
+    return mapPreviousCoordinate(&coordinate);
 }
 Vec2 Camera::mapPreviousCoordinate(Vec2 *coordinate)
 {
-    return addVec2(
-        &centreVector,
-        scaleVec2(subtractVec2(coordinate, &previousPosition), previousScale)
-    );
+    Vec2 mappedCoordinate = scaleVec2(subtractVec2(coordinate, &previousPosition), previousScale);
+    mappedCoordinate.y *= centreVector.x / centreVector.y;
+    return mappedCoordinate;
 }
 
 Vec2 Camera::unMapCoordinate(Vec2 coordinate)
@@ -117,11 +109,11 @@ void Camera::tick(double delta)
         zoomOut(delta);
     
     if (input->upPressed())
-        targetPosition.add(Vec2( 0.0,-1.0 * motionSpeed * delta * (1 / scale)));
+        targetPosition.add(Vec2( 0.0, 1.0 * motionSpeed * delta * (1 / scale)));
     if (input->rightPressed())
         targetPosition.add(Vec2( 1.0 * motionSpeed * delta * (1 / scale), 0.0));
     if (input->downPressed())
-        targetPosition.add(Vec2( 0.0, 1.0 * motionSpeed * delta * (1 / scale)));
+        targetPosition.add(Vec2( 0.0,-1.0 * motionSpeed * delta * (1 / scale)));
     if (input->leftPressed())
         targetPosition.add(Vec2(-1.0 * motionSpeed * delta * (1 / scale), 0.0));
 

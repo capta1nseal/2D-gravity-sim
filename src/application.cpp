@@ -29,7 +29,6 @@ GravitySimApplication::~GravitySimApplication()
 
 void GravitySimApplication::run()
 {
-    std::cout << "test reached run\n";
     std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<double, std::chrono::_V2::steady_clock::period>> start;
         
     std::chrono::duration<double> delta(0.0166667);
@@ -72,6 +71,15 @@ void GravitySimApplication::initializeGraphics()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+
+    glEnable(GL_MULTISAMPLE);
+
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
     SDL_GetCurrentDisplayMode(0, &displayMode);
 
     displayWidth = displayMode.w;
@@ -90,61 +98,59 @@ void GravitySimApplication::initializeGraphics()
 
     SDL_GL_SetSwapInterval(1);
 
-    std::cout << "test2\n";
+    { // initializing openGL
+        gProgramID = glCreateProgram();
 
-    gProgramID = glCreateProgram();
+        GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-    std::cout << "test3\n";
+        const GLchar *vertexShaderSource[] =
+        {
+            "#version 140\nin vec2 LVertexPos2D; void main() { gl_Position = vec4( LVertexPos2D.x, LVertexPos2D.y, 0, 1 ); }"
+        };
 
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertexShader, 1, vertexShaderSource, NULL);
 
-    const GLchar *vertexShaderSource[] =
-    {
-        "#version 140\nin vec2 LVertexPos2D; void main() { gl_Position = vec4( LVertexPos2D.x, LVertexPos2D.y, 0, 1 ); }"
-    };
+        glCompileShader(vertexShader);
 
-    glShaderSource(vertexShader, 1, vertexShaderSource, NULL);
+        glAttachShader(gProgramID, vertexShader);
 
-    glCompileShader(vertexShader);
+        GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    glAttachShader(gProgramID, vertexShader);
+        const GLchar *fragmentShaderSource[] =
+        {
+            "#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }"
+        };
 
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragmentShader, 1, fragmentShaderSource, NULL);
 
-    const GLchar *fragmentShaderSource[] =
-    {
-        "#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }"
-    };
+        glCompileShader(fragmentShader);
 
-    glShaderSource(fragmentShader, 1, fragmentShaderSource, NULL);
+        glAttachShader(gProgramID, fragmentShader);
 
-    glCompileShader(fragmentShader);
+        glLinkProgram(gProgramID);
 
-    glAttachShader(gProgramID, fragmentShader);
+        gVertexPos2DLocation = glGetAttribLocation(gProgramID, "LVertexPos2D");
 
-    glLinkProgram(gProgramID);
+        glClearColor(0.f, 0.f, 0.f, 0.1f);
 
-    gVertexPos2DLocation = glGetAttribLocation(gProgramID, "LVertexPos2D");
+        GLfloat vertexData[] =
+        {
+            -0.5f, -0.5f,
+            0.5f, -0.5f,
+            0.5f,  0.5f,
+            -0.5f,  0.5f
+        };
 
-    glClearColor(0.f, 0.f, 0.f, 1.f);
+        GLuint indexData[] = {0, 1, 2, 3};
 
-    GLfloat vertexData[] =
-    {
-        -0.5f, -0.5f,
-         0.5f, -0.5f,
-         0.5f,  0.5f,
-        -0.5f,  0.5f
-    };
+        glGenBuffers(1, &gVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+        glBufferData(GL_ARRAY_BUFFER, 2 * 4 * sizeof(GLfloat), vertexData, GL_STATIC_DRAW);
 
-    GLuint indexData[] = {0, 1, 2, 3};
-
-    glGenBuffers(1, &gVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, gVBO);
-    glBufferData(GL_ARRAY_BUFFER, 2 * 4 * sizeof(GLfloat), vertexData, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &gIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), indexData, GL_STATIC_DRAW);
+        glGenBuffers(1, &gIBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), indexData, GL_STATIC_DRAW);
+    }
 }
 void GravitySimApplication::destroyGraphics()
 {
@@ -274,6 +280,9 @@ void GravitySimApplication::draw()
         //SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
     }
     */
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    if (false)
     {
         glUseProgram(gProgramID);
 
@@ -284,6 +293,97 @@ void GravitySimApplication::draw()
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
         glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL);
+
+        glDisableVertexAttribArray(gVertexPos2DLocation);
+
+        glUseProgram(NULL);
+    }
+
+    if (true)
+    {
+        unsigned int particleCount;
+        std::vector<Vec2> positionArray, previousPositionArray;
+        unsigned int attractorCount;
+        std::vector<Attractor> attractorArray, previousAttractorArray;
+
+        simulation.getFrameData(particleCount, positionArray, previousPositionArray, attractorCount, attractorArray, previousAttractorArray);
+        simulation.storePreviousPositions();
+
+        Vec2 drawPosition;
+        Vec2 previousDrawPosition;
+
+        //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        //for (unsigned int i = 0; i < particleCount; i++)
+        //{
+        //    drawPosition.set(camera.mapCoordinate(&positionArray[i]));
+        //    previousDrawPosition.set(camera.mapPreviousCoordinate(&previousPositionArray[i]));
+        //    if (((drawPosition.x < 0 or drawPosition.x > displayWidth - 1) or (drawPosition.y < 0 or drawPosition.y > displayHeight - 1)) and ((previousDrawPosition.x < 0 or previousDrawPosition.x > displayWidth - 1) or (previousDrawPosition.y < 0 or previousDrawPosition.y > displayHeight - 1)) or (subtractVec2(drawPosition, previousDrawPosition).magnitude() > 10000.0))
+        //        continue;
+        //    
+        //    //SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
+        //}
+        //
+        ////SDL_SetRenderDrawColor(renderer, 191, 127, 15, 255);
+        //for (unsigned int i = 0; i < attractorCount; i++)
+        //{
+        //    drawPosition.set(camera.mapCoordinate(&attractorArray[i].position));
+        //    previousDrawPosition.set(camera.mapPreviousCoordinate(&previousAttractorArray[i].position));
+        //    if (((drawPosition.x < 0 or drawPosition.x > displayWidth - 1) or (drawPosition.y < 0 or drawPosition.y > displayHeight - 1)) and ((previousDrawPosition.x < 0 or previousDrawPosition.x > displayWidth - 1) or (previousDrawPosition.y < 0 or previousDrawPosition.y > displayHeight - 1)) or (subtractVec2(drawPosition, previousDrawPosition).magnitude() > 1000.0))
+        //        continue;
+        //    
+        //    //SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
+        //}
+
+        glGenBuffers(1, &gVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+
+        glBufferData(GL_ARRAY_BUFFER, particleCount * 2 * 2 * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
+
+        GLfloat *vertexBufferData = reinterpret_cast<GLfloat*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+        for (unsigned int i = 0; i < particleCount; i++)
+        {
+            drawPosition.set(camera.mapCoordinate(&positionArray[i]));
+            previousDrawPosition.set(camera.mapPreviousCoordinate(&previousPositionArray[i]));
+
+            //std::cout << drawPosition.x << "," << drawPosition.y << "\n";
+
+            vertexBufferData[i * 4] = static_cast<GLfloat>(drawPosition.x);
+            vertexBufferData[i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);
+            vertexBufferData[i * 4 + 2] = static_cast<GLfloat>(previousDrawPosition.x);
+            vertexBufferData[i * 4 + 3] = static_cast<GLfloat>(previousDrawPosition.y);
+        }
+
+        glUnmapBuffer(GL_ARRAY_BUFFER);
+
+        glGenBuffers(1, &gIBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
+
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, particleCount * 2 * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
+
+        GLuint *indexBufferData = reinterpret_cast<GLuint*>(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+        for (unsigned int i = 0; i < particleCount * 2; i++)
+        {
+            indexBufferData[i] = i;
+        }
+
+        glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+        
+        gVertexPos2DLocation = glGetAttribLocation(gProgramID, "LVertexPos2D");
+
+
+        glUseProgram(gProgramID);
+
+        glEnableVertexAttribArray(gVertexPos2DLocation);
+
+        glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+        glVertexAttribPointer(gVertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
+        //glDrawElements(GL_LINES, particleCount * 2, GL_UNSIGNED_INT, NULL);
+        glLineWidth(1.5);
+        glDrawArrays(GL_LINES, 0, particleCount * 2);
 
         glDisableVertexAttribArray(gVertexPos2DLocation);
 
