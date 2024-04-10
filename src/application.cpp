@@ -72,11 +72,18 @@ void GravitySimApplication::initializeGraphics()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
 
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_MULTISAMPLE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
@@ -312,28 +319,6 @@ void GravitySimApplication::draw()
         Vec2 drawPosition;
         Vec2 previousDrawPosition;
 
-        //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        //for (unsigned int i = 0; i < particleCount; i++)
-        //{
-        //    drawPosition.set(camera.mapCoordinate(&positionArray[i]));
-        //    previousDrawPosition.set(camera.mapPreviousCoordinate(&previousPositionArray[i]));
-        //    if (((drawPosition.x < 0 or drawPosition.x > displayWidth - 1) or (drawPosition.y < 0 or drawPosition.y > displayHeight - 1)) and ((previousDrawPosition.x < 0 or previousDrawPosition.x > displayWidth - 1) or (previousDrawPosition.y < 0 or previousDrawPosition.y > displayHeight - 1)) or (subtractVec2(drawPosition, previousDrawPosition).magnitude() > 10000.0))
-        //        continue;
-        //    
-        //    //SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
-        //}
-        //
-        ////SDL_SetRenderDrawColor(renderer, 191, 127, 15, 255);
-        //for (unsigned int i = 0; i < attractorCount; i++)
-        //{
-        //    drawPosition.set(camera.mapCoordinate(&attractorArray[i].position));
-        //    previousDrawPosition.set(camera.mapPreviousCoordinate(&previousAttractorArray[i].position));
-        //    if (((drawPosition.x < 0 or drawPosition.x > displayWidth - 1) or (drawPosition.y < 0 or drawPosition.y > displayHeight - 1)) and ((previousDrawPosition.x < 0 or previousDrawPosition.x > displayWidth - 1) or (previousDrawPosition.y < 0 or previousDrawPosition.y > displayHeight - 1)) or (subtractVec2(drawPosition, previousDrawPosition).magnitude() > 1000.0))
-        //        continue;
-        //    
-        //    //SDL_RenderDrawLineF(renderer, drawPosition.x, drawPosition.y, previousDrawPosition.x, previousDrawPosition.y);
-        //}
-
         glGenBuffers(1, &gVBO);
         glBindBuffer(GL_ARRAY_BUFFER, gVBO);
 
@@ -344,7 +329,8 @@ void GravitySimApplication::draw()
         for (unsigned int i = 0; i < particleCount; i++)
         {
             drawPosition.set(camera.mapCoordinate(&positionArray[i]));
-            previousDrawPosition.set(camera.mapPreviousCoordinate(&previousPositionArray[i]));
+            previousDrawPosition.set(camera.mapPreviousCoordinate(previousPositionArray[i]));
+            //previousDrawPosition.set(camera.mapPreviousCoordinate(previousPositionArray[i].towardsInplace(positionArray[i], 5.0)));
 
             //std::cout << drawPosition.x << "," << drawPosition.y << "\n";
 
@@ -384,6 +370,8 @@ void GravitySimApplication::draw()
         //glDrawElements(GL_LINES, particleCount * 2, GL_UNSIGNED_INT, NULL);
         glLineWidth(1.5);
         glDrawArrays(GL_LINES, 0, particleCount * 2);
+        glPointSize(1.5);
+        glDrawArrays(GL_POINTS, 0, particleCount * 2);
 
         glDisableVertexAttribArray(gVertexPos2DLocation);
 

@@ -28,6 +28,10 @@ struct Vec2
     void scale(double scalar);
     Vec2 scaleInplace(double scalar);
 
+    Vec2 towardsInplace(Vec2 other, double scalar);
+
+    Vec2 normaliseInplace(double scalar);
+
     double magnitude();
 };
 

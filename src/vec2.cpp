@@ -64,6 +64,20 @@ void Vec2::scale(double scalar)
 }
 Vec2 Vec2::scaleInplace(double scalar) { return Vec2(x * scalar, y * scalar); }
 
+Vec2 Vec2::towardsInplace(Vec2 other, double scalar)
+{
+    return addVec2(this, subtractVec2(other, this).scaleInplace(scalar));
+}
+
+Vec2 Vec2::normaliseInplace(double scalar)
+{
+    double initialMagnitude = magnitude();
+
+    if (initialMagnitude == 0 or initialMagnitude != initialMagnitude) { return Vec2(); } // avoid division by zero and NaN
+
+    return scaleInplace(scalar / initialMagnitude);
+}
+
 double Vec2::magnitude()
 {
     return std::sqrt(x * x + y * y);
