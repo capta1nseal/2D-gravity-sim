@@ -255,98 +255,76 @@ void GravitySimApplication::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if (false)
+
+    unsigned int particleCount;
+    std::vector<Vec2> positionArray, previousPositionArray;
+    unsigned int attractorCount;
+    std::vector<Attractor> attractorArray, previousAttractorArray;
+
+    simulation.getFrameData(particleCount, positionArray, previousPositionArray, attractorCount, attractorArray, previousAttractorArray);
+    simulation.storePreviousPositions();
+
+    Vec2 drawPosition;
+    Vec2 previousDrawPosition;
+
+    glGenBuffers(1, &gVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+
+    glBufferData(GL_ARRAY_BUFFER, particleCount * 2 * 2 * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
+
+    GLfloat *vertexBufferData = reinterpret_cast<GLfloat*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+    for (unsigned int i = 0; i < particleCount; i++)
     {
-        glUseProgram(gProgramID);
+        drawPosition.set(camera.mapCoordinate(&positionArray[i]));
+        previousDrawPosition.set(camera.mapPreviousCoordinate(previousPositionArray[i]));
 
-        glEnableVertexAttribArray(gVertexPos2DLocation);
-
-        glBindBuffer(GL_ARRAY_BUFFER, gVBO);
-        glVertexAttribPointer(gVertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
-        glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL);
-
-        glDisableVertexAttribArray(gVertexPos2DLocation);
-
-        glUseProgram(NULL);
+        vertexBufferData[i * 4] = static_cast<GLfloat>(drawPosition.x);
+        vertexBufferData[i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);
+        vertexBufferData[i * 4 + 2] = static_cast<GLfloat>(previousDrawPosition.x);
+        vertexBufferData[i * 4 + 3] = static_cast<GLfloat>(previousDrawPosition.y);
     }
 
-    if (true)
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    glGenBuffers(1, &gIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
+
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, particleCount * 2 * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
+
+    GLuint *indexBufferData = reinterpret_cast<GLuint*>(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+    for (unsigned int i = 0; i < particleCount * 2; i++)
     {
-        unsigned int particleCount;
-        std::vector<Vec2> positionArray, previousPositionArray;
-        unsigned int attractorCount;
-        std::vector<Attractor> attractorArray, previousAttractorArray;
-
-        simulation.getFrameData(particleCount, positionArray, previousPositionArray, attractorCount, attractorArray, previousAttractorArray);
-        simulation.storePreviousPositions();
-
-        Vec2 drawPosition;
-        Vec2 previousDrawPosition;
-
-        glGenBuffers(1, &gVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, gVBO);
-
-        glBufferData(GL_ARRAY_BUFFER, particleCount * 2 * 2 * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
-
-        GLfloat *vertexBufferData = reinterpret_cast<GLfloat*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
-
-        for (unsigned int i = 0; i < particleCount; i++)
-        {
-            drawPosition.set(camera.mapCoordinate(&positionArray[i]));
-            previousDrawPosition.set(camera.mapPreviousCoordinate(previousPositionArray[i]));
-            //previousDrawPosition.set(camera.mapPreviousCoordinate(previousPositionArray[i].towardsInplace(positionArray[i], 5.0)));
-
-            //std::cout << drawPosition.x << "," << drawPosition.y << "\n";
-
-            vertexBufferData[i * 4] = static_cast<GLfloat>(drawPosition.x);
-            vertexBufferData[i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);
-            vertexBufferData[i * 4 + 2] = static_cast<GLfloat>(previousDrawPosition.x);
-            vertexBufferData[i * 4 + 3] = static_cast<GLfloat>(previousDrawPosition.y);
-        }
-
-        glUnmapBuffer(GL_ARRAY_BUFFER);
-
-        glGenBuffers(1, &gIBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
-
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, particleCount * 2 * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
-
-        GLuint *indexBufferData = reinterpret_cast<GLuint*>(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
-
-        for (unsigned int i = 0; i < particleCount * 2; i++)
-        {
-            indexBufferData[i] = i;
-        }
-
-        glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-        
-        gVertexPos2DLocation = glGetAttribLocation(gProgramID, "LVertexPos2D");
-
-
-        glUseProgram(gProgramID);
-
-        glEnableVertexAttribArray(gVertexPos2DLocation);
-
-        glBindBuffer(GL_ARRAY_BUFFER, gVBO);
-        glVertexAttribPointer(gVertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
-        glDrawElements(GL_LINES, particleCount * 2, GL_UNSIGNED_INT, NULL);
-        glLineWidth(1.5);
-        glDrawArrays(GL_LINES, 0, particleCount * 2);
-        glPointSize(1.5);
-        glEnable(GL_PROGRAM_POINT_SIZE);
-        glEnable(GL_POINT_SMOOTH);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDrawArrays(GL_POINTS, 0, particleCount * 2);
-
-        glDisableVertexAttribArray(gVertexPos2DLocation);
-
-        glUseProgram(NULL);
+        indexBufferData[i] = i;
     }
+
+    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+    
+    gVertexPos2DLocation = glGetAttribLocation(gProgramID, "LVertexPos2D");
+
+    glUseProgram(gProgramID);
+
+    glEnableVertexAttribArray(gVertexPos2DLocation);
+
+    glBindBuffer(GL_ARRAY_BUFFER, gVBO);
+    glVertexAttribPointer(gVertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
+    glDrawElements(GL_LINES, particleCount * 2, GL_UNSIGNED_INT, NULL);
+    glLineWidth(1.5);
+    glDrawArrays(GL_LINES, 0, particleCount * 2);
+    glPointSize(1.5);
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    glEnable(GL_POINT_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDrawArrays(GL_POINTS, 0, particleCount * 2);
+
+    glDisableVertexAttribArray(gVertexPos2DLocation);
+
+    glUseProgram(NULL);
+
 
     SDL_GL_SwapWindow(window);
 }

@@ -7,17 +7,17 @@
 
 Camera::Camera()
 {
-    scale = 0.00001;
-    previousScale = 0.00001;
-    targetScale = 0.01;
-    scaleApproachQuotient = 2.5;
-
-    motionSpeed = 1.0;
     positionApproachQuotient = 5.0;
+    motionSpeed = 1.0;
 
-    zoomFactor = 2.5;
     minScale = 0.00001;
     maxScale = 10.0;
+    scale = 0.00001;
+    previousScale = scale;
+    targetScale = 0.001;
+    scaleApproachQuotient = 2.5;
+
+    zoomFactor = 2.5;
 }
 
 void Camera::initializeResolution(int initialDisplayWidth, int initialDisplayHeight)
@@ -88,15 +88,16 @@ Vec2 Camera::mapPreviousCoordinate(Vec2 *coordinate)
 
 Vec2 Camera::unMapCoordinate(Vec2 coordinate)
 {
-    return addVec2(
-        scaleVec2(subtractVec2(&coordinate, &centreVector), 1.0 / scale),
-        &position
-    );
+    return unMapCoordinate(&coordinate);
 }
 Vec2 Camera::unMapCoordinate(Vec2 *coordinate)
 {
+    Vec2 mappedCoordinate = Vec2(
+        (coordinate->x - centreVector.x) / centreVector.x,
+        (centreVector.y - coordinate->y) / centreVector.x
+    );
     return addVec2(
-        scaleVec2(subtractVec2(coordinate, &centreVector), 1.0 / scale),
+        scaleVec2(mappedCoordinate, 1.0 / scale),
         &position
     );
 }
