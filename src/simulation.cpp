@@ -73,5 +73,4 @@ std::chrono::steady_clock::time_point GravitySimSimulation::now()
 void GravitySimSimulation::tick(double delta)
 {
     particles.tick(delta);
-    //particles.tick(0.00001); // use to slow down time
 }
