@@ -39,6 +39,7 @@ void GravitySimSimulation::getFrameData(unsigned int &particleCount, std::vector
 {
     std::lock_guard<std::mutex> lock(simulationMutex);
     particles.getFrameData(particleCount, positionArray, previousPositionArray, attractorCount, attractorArray, previousAttractorArray);
+    particles.storePreviousPositions();
 }
 
 void GravitySimSimulation::addAttractor(Vec2 position, double mass)
@@ -53,6 +54,11 @@ void GravitySimSimulation::addAttractor(Vec2 position, Vec2 velocity, double mas
 void GravitySimSimulation::removeAttractor(Vec2 position)
 {
     particles.removeAttractor(position);
+}
+
+Vec2* GravitySimSimulation::getClosestPositionPointer(Vec2 position)
+{
+    return particles.getClosestPositionPointer(position);
 }
 
 void GravitySimSimulation::storePreviousPositions()

@@ -18,8 +18,8 @@ GravitySimApplication::GravitySimApplication()
 {
     initializeGraphics();
     initializeInput();
-    initializeSimulation();
     initializeCamera();
+    initializeSimulation();
 }
 GravitySimApplication::~GravitySimApplication()
 {
@@ -250,6 +250,9 @@ void GravitySimApplication::initializeSimulation()
     velocity = 5400;
     mass = massBasis * 102;
     simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+
+
+    camera.startFollowing(simulation.getClosestPositionPointer(Vec2(0.0, 0.0)));
 }
 
 std::chrono::steady_clock::time_point GravitySimApplication::now()
@@ -278,6 +281,16 @@ void GravitySimApplication::handleEvents()
             case SDL_SCANCODE_ESCAPE:
                 running = false;
                 break;
+            case SDL_SCANCODE_F:
+                if (camera.isFollowing())
+                {
+                    camera.stopFollowing();
+                }
+                else
+                {
+                    Vec2* positionToFollow = simulation.getClosestPositionPointer(worldMousePosition);
+                    camera.startFollowing(positionToFollow);
+                }
             default:
                 break;
             }
@@ -321,9 +334,8 @@ void GravitySimApplication::draw()
     std::vector<Vec2> positionArray, previousPositionArray;
     unsigned int attractorCount;
     std::vector<Attractor> attractorArray, previousAttractorArray;
-
+    
     simulation.getFrameData(particleCount, positionArray, previousPositionArray, attractorCount, attractorArray, previousAttractorArray);
-    simulation.storePreviousPositions();
 
     Vec2 drawPosition;
     Vec2 previousDrawPosition;

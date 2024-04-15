@@ -33,6 +33,11 @@ public:
     Vec2 unMapCoordinate(Vec2 coordinate);
     Vec2 unMapCoordinate(Vec2 *coordinate);
 
+    bool isFollowing();
+
+    void startFollowing(Vec2* positionToFollow);
+    void stopFollowing();
+
     void tick(double delta);
 
 private:
@@ -42,6 +47,9 @@ private:
     Vec2 targetPosition;
     double positionApproachQuotient;
     double motionSpeed;
+
+    bool following;
+    Vec2* followingPosition;
 
     double minScale;
     double maxScale;

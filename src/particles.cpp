@@ -73,7 +73,7 @@ void Particles::getFrameData(unsigned int &particleCount, std::vector<Vec2> &pos
 
 void Particles::tick(double delta)
 {
-    delta *= 1e6;
+    delta *= 1e5;
 
     Vec2 dPos;
     Vec2 force;
@@ -142,6 +142,26 @@ void Particles::removeAttractor(Vec2 position)
     }
 
     removeAttractor(closestIndex);
+}
+
+Vec2* Particles::getClosestPositionPointer(Vec2 position)
+{
+    if (m_attractorCount == 0) return nullptr;
+
+    unsigned int closestIndex = 0;
+    double closestDistance = INFINITY;
+
+    for (unsigned int i = 0; i < m_attractorCount; i++)
+    {
+        double distance = (m_attractorArray[i].position - position).magnitude();
+        if (distance < closestDistance)
+        {
+            closestIndex = i;
+            closestDistance = distance;
+        }
+    }
+
+    return &m_attractorArray[closestIndex].position;
 }
 
 void Particles::storePreviousPositions()

@@ -21,6 +21,8 @@ public:
 
     void removeAttractor(Vec2 position);
 
+    Vec2* getClosestPositionPointer(Vec2 position);
+
     void storePreviousPositions();
 
 private:
