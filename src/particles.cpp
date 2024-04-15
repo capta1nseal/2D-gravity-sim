@@ -69,7 +69,7 @@ void Particles::tick(double delta)
         {
             dPos = currentAttractor.position - m_positionArray[j];
             forceVectorOverDistance = (10.0 * currentAttractor.mass) / pow(dPos.magnitude(), 3);
-            m_velocityArray[j].add(dPos * forceVectorOverDistance);
+            m_velocityArray[j] += dPos * forceVectorOverDistance;
         }
         for (int j = 0; j < m_attractorCount; j++)
         {
@@ -77,22 +77,22 @@ void Particles::tick(double delta)
 
             dPos = currentAttractor.position - m_attractorArray[j].position;
             forceVectorOverDistance = (10.0 * currentAttractor.mass * m_attractorArray[j].mass) / pow(dPos.magnitude(), 3);
-            m_attractorVelocityArray[j].add(dPos * forceVectorOverDistance);
+            m_attractorVelocityArray[j] += dPos * forceVectorOverDistance;
         }
     }
     for (int i = 0; i < m_particleCount; i++)
     {
-        m_positionArray[i].add(m_velocityArray[i].scaleInplace(delta));
+        m_positionArray[i] += m_velocityArray[i] * delta;
     }
     for (int i = 0; i < m_attractorCount; i++)
     {
-        m_attractorArray[i].position.add(m_attractorVelocityArray[i].scaleInplace(delta));
+        m_attractorArray[i].position += m_attractorVelocityArray[i] * delta;
     }
 }
 
 void Particles::addAttractor(Vec2 position, double mass)
 {
-    addAttractor(position, Vec2(0.0, 0.0), mass);
+    addAttractor(position, Vec2(), mass);
 }
 void Particles::addAttractor(Vec2 position, Vec2 velocity, double mass)
 {
@@ -115,7 +115,7 @@ void Particles::removeAttractor(Vec2 position)
 
     for (unsigned int i = 0; i < m_attractorCount; i++)
     {
-        double distance = subtractVec2(m_attractorArray[i].position, position).magnitude();
+        double distance = (m_attractorArray[i].position - position).magnitude();
         if (distance < closestDistance)
         {
             closestIndex = i;

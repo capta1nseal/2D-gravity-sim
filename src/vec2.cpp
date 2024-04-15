@@ -114,6 +114,12 @@ double Vec2::operator%(Vec2 const& other)
     return x * other.y - y * other.x;
 }
 
+void Vec2::operator+=(Vec2 const& other)
+{
+    x += other.x;
+    y += other.y;
+}
+
 
 Vec2 addVec2(Vec2 first, Vec2 second) { return Vec2(first.x + second.x, first.y + second.y); }
 Vec2 addVec2(Vec2 first, Vec2 *second) { return Vec2(first.x + second->x, first.y + second->y); }

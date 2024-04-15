@@ -289,8 +289,8 @@ void GravitySimApplication::draw()
 
     for (unsigned int i = 0; i < attractorCount; i++)
     {
-        drawPosition.set(camera.mapCoordinate(&attractorArray[i].position));
-        previousDrawPosition.set(camera.mapPreviousCoordinate(&previousAttractorArray[i].position));
+        drawPosition.set(camera.mapCoordinate(attractorArray[i].position));
+        previousDrawPosition.set(camera.mapPreviousCoordinate(previousAttractorArray[i].position));
 
         vertexBufferData[attractorBaseIndex + i * 4] = static_cast<GLfloat>(drawPosition.x);
         vertexBufferData[attractorBaseIndex + i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);

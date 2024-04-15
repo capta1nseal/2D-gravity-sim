@@ -22,7 +22,7 @@ Camera::Camera()
 
 void Camera::initializeResolution(int initialDisplayWidth, int initialDisplayHeight)
 {
-    centreVector = Vec2(static_cast<double>(initialDisplayWidth) / 2.0, static_cast<double>(initialDisplayHeight) / 2.0);
+    centreVector = Vec2(initialDisplayWidth / 2.0, initialDisplayHeight / 2.0);
 }
 
 void Camera::setInput(Input *inputPtr)
@@ -32,19 +32,19 @@ void Camera::setInput(Input *inputPtr)
 
 void Camera::setPosition(Vec2 newPosition)
 {
-    targetPosition.set(&newPosition);
-    previousPosition.set(&newPosition);
-    position.set(&newPosition);
+    targetPosition = newPosition;
+    previousPosition = newPosition;
+    position = newPosition;
 }
 
 void Camera::setTargetPosition(Vec2 newTargetPosition)
 {
-    targetPosition.set(newTargetPosition);
+    targetPosition = newTargetPosition;
 }
 
 void Camera::setTargetPosition(Vec2 *newTargetPosition)
 {
-    targetPosition.set(newTargetPosition);
+    targetPosition = *newTargetPosition;
 }
 
 void Camera::setScale(double newScale)
@@ -70,7 +70,7 @@ Vec2 Camera::mapCoordinate(Vec2 coordinate)
 }
 Vec2 Camera::mapCoordinate(Vec2 *coordinate)
 {
-    Vec2 mappedCoordinate = scaleVec2(subtractVec2(coordinate, &position), scale);
+    Vec2 mappedCoordinate = (*coordinate - position) * scale;
     mappedCoordinate.y *= centreVector.x / centreVector.y;
     return mappedCoordinate;
 }
@@ -81,7 +81,7 @@ Vec2 Camera::mapPreviousCoordinate(Vec2 coordinate)
 }
 Vec2 Camera::mapPreviousCoordinate(Vec2 *coordinate)
 {
-    Vec2 mappedCoordinate = scaleVec2(subtractVec2(coordinate, &previousPosition), previousScale);
+    Vec2 mappedCoordinate = (*coordinate - previousPosition) * previousScale;
     mappedCoordinate.y *= centreVector.x / centreVector.y;
     return mappedCoordinate;
 }
@@ -96,10 +96,8 @@ Vec2 Camera::unMapCoordinate(Vec2 *coordinate)
         (coordinate->x - centreVector.x) / centreVector.x,
         (centreVector.y - coordinate->y) / centreVector.x
     );
-    return addVec2(
-        scaleVec2(mappedCoordinate, 1.0 / scale),
-        &position
-    );
+
+    return mappedCoordinate / scale + position;
 }
 
 void Camera::tick(double delta)
@@ -110,16 +108,16 @@ void Camera::tick(double delta)
         zoomOut(delta);
     
     if (input->upPressed())
-        targetPosition.add(Vec2( 0.0, 1.0 * motionSpeed * delta * (1 / scale)));
+        targetPosition += Vec2( 0.0, 1.0 * motionSpeed * delta * (1.0 / scale));
     if (input->rightPressed())
-        targetPosition.add(Vec2( 1.0 * motionSpeed * delta * (1 / scale), 0.0));
+        targetPosition += Vec2( 1.0 * motionSpeed * delta * (1.0 / scale), 0.0);
     if (input->downPressed())
-        targetPosition.add(Vec2( 0.0,-1.0 * motionSpeed * delta * (1 / scale)));
+        targetPosition += Vec2( 0.0,-1.0 * motionSpeed * delta * (1.0 / scale));
     if (input->leftPressed())
-        targetPosition.add(Vec2(-1.0 * motionSpeed * delta * (1 / scale), 0.0));
+        targetPosition += Vec2(-1.0 * motionSpeed * delta * (1.0 / scale), 0.0);
 
-    previousPosition.set(&position);
-    position.add(scaleVec2(subtractVec2(&targetPosition, &position), positionApproachQuotient * delta));
+    previousPosition = position;
+    position += (targetPosition - position) * (positionApproachQuotient * delta);
     previousScale = scale;
     scale += (targetScale - scale) * scaleApproachQuotient * delta;
 }

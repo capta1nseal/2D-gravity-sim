@@ -43,6 +43,8 @@ struct Vec2
     Vec2 operator-(Vec2 const& other);
     double operator*(Vec2 const& other);
     double operator%(Vec2 const& other);
+
+    void operator+=(Vec2 const& other);
 };
 
 Vec2 addVec2(Vec2 first, Vec2 second);
