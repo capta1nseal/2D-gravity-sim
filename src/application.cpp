@@ -31,7 +31,7 @@ void GravitySimApplication::run()
 {
     std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<double, std::chrono::_V2::steady_clock::period>> start;
         
-    std::chrono::duration<double> delta(0.0166667);
+    std::chrono::duration<double> delta(0.0);
 
     int frameCounter = 0;
     
@@ -270,7 +270,7 @@ void GravitySimApplication::draw()
     glGenBuffers(1, &gVBO);
     glBindBuffer(GL_ARRAY_BUFFER, gVBO);
 
-    glBufferData(GL_ARRAY_BUFFER, particleCount * 2 * 2 * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (particleCount + attractorCount) * 2 * 2 * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
 
     GLfloat *vertexBufferData = reinterpret_cast<GLfloat*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
 
@@ -285,16 +285,29 @@ void GravitySimApplication::draw()
         vertexBufferData[i * 4 + 3] = static_cast<GLfloat>(previousDrawPosition.y);
     }
 
+    unsigned int attractorBaseIndex = particleCount * 4;
+
+    for (unsigned int i = 0; i < attractorCount; i++)
+    {
+        drawPosition.set(camera.mapCoordinate(&attractorArray[i].position));
+        previousDrawPosition.set(camera.mapPreviousCoordinate(&previousAttractorArray[i].position));
+
+        vertexBufferData[attractorBaseIndex + i * 4] = static_cast<GLfloat>(drawPosition.x);
+        vertexBufferData[attractorBaseIndex + i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);
+        vertexBufferData[attractorBaseIndex + i * 4 + 2] = static_cast<GLfloat>(previousDrawPosition.x);
+        vertexBufferData[attractorBaseIndex + i * 4 + 3] = static_cast<GLfloat>(previousDrawPosition.y);
+    }
+
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
     glGenBuffers(1, &gIBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, particleCount * 2 * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (particleCount + attractorCount) * 2 * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
 
     GLuint *indexBufferData = reinterpret_cast<GLuint*>(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
 
-    for (unsigned int i = 0; i < particleCount * 2; i++)
+    for (unsigned int i = 0; i < (particleCount + attractorCount) * 2; i++)
     {
         indexBufferData[i] = i;
     }
@@ -311,15 +324,22 @@ void GravitySimApplication::draw()
     glVertexAttribPointer(gVertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), NULL);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
-    glDrawElements(GL_LINES, particleCount * 2, GL_UNSIGNED_INT, NULL);
+
+    // glDrawElements(GL_LINES, particleCount * 2, GL_UNSIGNED_INT, NULL); - probably DEPRECATED
+    
     glLineWidth(1.5);
     glDrawArrays(GL_LINES, 0, particleCount * 2);
-    glPointSize(1.5);
-    glEnable(GL_PROGRAM_POINT_SIZE);
-    glEnable(GL_POINT_SMOOTH);
+    // glEnable(GL_PROGRAM_POINT_SIZE);
+    // glEnable(GL_POINT_SMOOTH);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glPointSize(1.5);
     glDrawArrays(GL_POINTS, 0, particleCount * 2);
+
+    glLineWidth(15.0);
+    glDrawArrays(GL_LINES, particleCount * 2, attractorCount * 2);
+    glPointSize(15.0);
+    glDrawArrays(GL_POINTS, particleCount * 2, attractorCount * 2);
 
     glDisableVertexAttribArray(gVertexPos2DLocation);
 

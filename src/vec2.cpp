@@ -83,6 +83,38 @@ double Vec2::magnitude()
     return std::sqrt(x * x + y * y);
 }
 
+bool Vec2::operator==(Vec2 const& other)
+{
+    return x == other.x and y == other.y;
+}
+
+Vec2 Vec2::operator*(double const& scalar)
+{
+    return Vec2(x * scalar, y * scalar);
+}
+Vec2 Vec2::operator/(double const& scalar)
+{
+    return Vec2(x / scalar, y / scalar);
+}
+
+Vec2 Vec2::operator+(Vec2 const& other)
+{
+    return Vec2(x + other.x, y + other.y);
+}
+Vec2 Vec2::operator-(Vec2 const& other)
+{
+    return Vec2(x - other.x, y - other.y);
+}
+double Vec2::operator*(Vec2 const& other)
+{
+    return x * other.x + y * other.y;
+}
+double Vec2::operator%(Vec2 const& other)
+{
+    return x * other.y - y * other.x;
+}
+
+
 Vec2 addVec2(Vec2 first, Vec2 second) { return Vec2(first.x + second.x, first.y + second.y); }
 Vec2 addVec2(Vec2 first, Vec2 *second) { return Vec2(first.x + second->x, first.y + second->y); }
 Vec2 addVec2(Vec2 *first, Vec2 second) { return Vec2(first->x + second.x, first->y + second.y); }

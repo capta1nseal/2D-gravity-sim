@@ -12,7 +12,7 @@ GravitySimSimulation::GravitySimSimulation()
 
 void GravitySimSimulation::simulationLoop()
 {
-    std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::chrono::steady_clock::period>> start;
+    auto start = now();
     std::chrono::duration<double> delta(0.0);
 
     int tickCounter = 0;
@@ -55,7 +55,7 @@ void GravitySimSimulation::removeAttractor(Vec2 position)
     particles.removeAttractor(position);
 }
 
-void GravitySimSimulation::storePreviousPositions()
+void GravitySimSimulation::storePreviousPositions()continui
 {
     particles.storePreviousPositions();
 }
