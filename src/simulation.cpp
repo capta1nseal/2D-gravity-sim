@@ -13,7 +13,7 @@ GravitySimSimulation::GravitySimSimulation()
 void GravitySimSimulation::simulationLoop()
 {
     std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::chrono::steady_clock::period>> start;
-    std::chrono::duration<double> delta(0.1);
+    std::chrono::duration<double> delta(0.0);
 
     int tickCounter = 0;
 
