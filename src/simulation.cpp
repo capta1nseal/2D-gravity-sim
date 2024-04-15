@@ -55,7 +55,7 @@ void GravitySimSimulation::removeAttractor(Vec2 position)
     particles.removeAttractor(position);
 }
 
-void GravitySimSimulation::storePreviousPositions()continui
+void GravitySimSimulation::storePreviousPositions()
 {
     particles.storePreviousPositions();
 }
