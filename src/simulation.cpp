@@ -12,8 +12,8 @@ GravitySimSimulation::GravitySimSimulation()
 
 void GravitySimSimulation::simulationLoop()
 {
-    std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<double, std::chrono::steady_clock::period>> start;
-    std::chrono::duration<double> delta(0.1);
+    auto start = now();
+    std::chrono::duration<double> delta(0.0);
 
     int tickCounter = 0;
 
@@ -73,5 +73,4 @@ std::chrono::steady_clock::time_point GravitySimSimulation::now()
 void GravitySimSimulation::tick(double delta)
 {
     particles.tick(delta);
-    //particles.tick(0.00001); // use to slow down time
 }

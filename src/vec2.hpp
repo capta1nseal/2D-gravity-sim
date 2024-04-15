@@ -28,7 +28,21 @@ struct Vec2
     void scale(double scalar);
     Vec2 scaleInplace(double scalar);
 
+    Vec2 towardsInplace(Vec2 other, double scalar);
+
+    Vec2 normaliseInplace(double scalar);
+
     double magnitude();
+
+    bool operator==(Vec2 const& other);
+
+    Vec2 operator*(double const& scalar);
+    Vec2 operator/(double const& scalar);
+
+    Vec2 operator+(Vec2 const& other);
+    Vec2 operator-(Vec2 const& other);
+    double operator*(Vec2 const& other);
+    double operator%(Vec2 const& other);
 };
 
 Vec2 addVec2(Vec2 first, Vec2 second);

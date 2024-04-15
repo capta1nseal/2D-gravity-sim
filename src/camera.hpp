@@ -41,17 +41,16 @@ private:
     Vec2 previousPosition;
     Vec2 targetPosition;
     double positionApproachQuotient;
+    double motionSpeed;
 
+    double minScale;
+    double maxScale;
     double scale;
     double previousScale;
     double targetScale;
     double scaleApproachQuotient;
 
-    double motionSpeed;
-
     double zoomFactor;
-    double minScale;
-    double maxScale;
 
     Input *input;
 

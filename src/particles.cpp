@@ -60,26 +60,24 @@ void Particles::getFrameData(unsigned int &particleCount, std::vector<Vec2> &pos
 
 void Particles::tick(double delta)
 {
-    double dx;
-    double dy;
+    Vec2 dPos;
     double forceVectorOverDistance;
 
     for (Attractor currentAttractor : m_attractorArray)
     {
         for (int j = 0; j < m_particleCount; j++)
         {
-            dx = currentAttractor.position.x - m_positionArray[j].x;
-            dy = currentAttractor.position.y - m_positionArray[j].y;
-            forceVectorOverDistance = (10.0 * currentAttractor.mass) / pow(Vec2(dx, dy).magnitude(), 3);
-            m_velocityArray[j].add(Vec2(forceVectorOverDistance * dx, forceVectorOverDistance * dy));
+            dPos = currentAttractor.position - m_positionArray[j];
+            forceVectorOverDistance = (10.0 * currentAttractor.mass) / pow(dPos.magnitude(), 3);
+            m_velocityArray[j].add(dPos * forceVectorOverDistance);
         }
         for (int j = 0; j < m_attractorCount; j++)
         {
-            if ((currentAttractor.position.x == m_attractorArray[j].position.x) and (currentAttractor.position.y == m_attractorArray[j].position.y)) continue;
-            dx = currentAttractor.position.x - m_attractorArray[j].position.x;
-            dy = currentAttractor.position.y - m_attractorArray[j].position.y;
-            forceVectorOverDistance = (10.0 * currentAttractor.mass * m_attractorArray[j].mass) / pow(Vec2(dx, dy).magnitude(), 3);
-            m_attractorVelocityArray[j].add(Vec2(forceVectorOverDistance * dx, forceVectorOverDistance * dy));
+            if (currentAttractor.position == m_attractorArray[j].position) continue;
+
+            dPos = currentAttractor.position - m_attractorArray[j].position;
+            forceVectorOverDistance = (10.0 * currentAttractor.mass * m_attractorArray[j].mass) / pow(dPos.magnitude(), 3);
+            m_attractorVelocityArray[j].add(dPos * forceVectorOverDistance);
         }
     }
     for (int i = 0; i < m_particleCount; i++)
