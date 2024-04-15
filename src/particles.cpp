@@ -8,8 +8,21 @@
 
 Particles::Particles() {}
 
-void Particles::generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity)
+void Particles::initializeParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity)
 {
+    if (linearDensity == 0)
+    {
+        m_particleCount = 0;
+        m_positionArray.reserve(m_particleCount);
+        m_previousPositionArray.reserve(m_particleCount);
+        m_velocityArray.reserve(m_particleCount);
+        m_attractorCount = 0;
+        m_attractorArray.reserve(m_attractorCount);
+        m_previousAttractorArray.reserve(m_attractorCount);
+        m_attractorVelocityArray.reserve(m_attractorCount);
+
+        return;
+    }
     m_particleCount = 0;
     for (double x = topLeft.x; x < bottomRight.x; x += 1.0 / linearDensity)
     {
@@ -60,24 +73,29 @@ void Particles::getFrameData(unsigned int &particleCount, std::vector<Vec2> &pos
 
 void Particles::tick(double delta)
 {
+    delta *= 1e6;
+
     Vec2 dPos;
-    double forceVectorOverDistance;
+    Vec2 force;
+    Vec2 acceleration;
 
     for (Attractor currentAttractor : m_attractorArray)
     {
         for (int j = 0; j < m_particleCount; j++)
         {
             dPos = currentAttractor.position - m_positionArray[j];
-            forceVectorOverDistance = (10.0 * currentAttractor.mass) / pow(dPos.magnitude(), 3);
-            m_velocityArray[j] += dPos * forceVectorOverDistance;
+            force = dPos * ((6.6743e-11 * currentAttractor.mass * 1.0) / pow(dPos.magnitude(), 3));
+            acceleration = force / 1.0;
+            m_velocityArray[j] += acceleration * delta;
         }
         for (int j = 0; j < m_attractorCount; j++)
         {
             if (currentAttractor.position == m_attractorArray[j].position) continue;
 
             dPos = currentAttractor.position - m_attractorArray[j].position;
-            forceVectorOverDistance = (10.0 * currentAttractor.mass * m_attractorArray[j].mass) / pow(dPos.magnitude(), 3);
-            m_attractorVelocityArray[j] += dPos * forceVectorOverDistance;
+            force = dPos * ((6.6743e-11 * currentAttractor.mass * m_attractorArray[j].mass) / pow(dPos.magnitude(), 3));
+            acceleration = force / m_attractorArray[j].mass;
+            m_attractorVelocityArray[j] += acceleration * delta;
         }
     }
     for (int i = 0; i < m_particleCount; i++)
