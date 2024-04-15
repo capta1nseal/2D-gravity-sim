@@ -12,7 +12,7 @@ Camera::Camera()
 
     minScale = 1e-15;
     maxScale = 1e15;
-    scale = 1;
+    scale = 2.5e-13;
     previousScale = scale;
     targetScale = scale;
     scaleApproachQuotient = 10.0;

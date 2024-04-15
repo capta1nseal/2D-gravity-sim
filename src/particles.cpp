@@ -73,7 +73,7 @@ void Particles::getFrameData(unsigned int &particleCount, std::vector<Vec2> &pos
 
 void Particles::tick(double delta)
 {
-    delta *= 100000;
+    delta *= 1e6;
 
     Vec2 dPos;
     Vec2 force;
