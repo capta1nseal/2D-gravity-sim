@@ -62,7 +62,7 @@ void GravitySimSimulation::storePreviousPositions()
 
 void GravitySimSimulation::initializeParticles()
 {
-    particles.generateParticles(1.0, Vec2(-50, -50), Vec2(50, 50), Vec2(0, 0));
+    particles.initializeParticles(0, Vec2(-50, -50), Vec2(50, 50), Vec2(0, 0));
 }
 
 std::chrono::steady_clock::time_point GravitySimSimulation::now()

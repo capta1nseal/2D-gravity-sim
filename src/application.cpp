@@ -83,6 +83,7 @@ void GravitySimApplication::initializeGraphics()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
@@ -179,16 +180,76 @@ void GravitySimApplication::initializeCamera()
     camera.setInput(&input);
 
     camera.initializeResolution(displayWidth, displayHeight);
-    camera.setPosition(Vec2(0, 0));
+    camera.setPosition(Vec2(0.0, 0.0));
 }
 
 void GravitySimApplication::initializeSimulation()
 {
     // The following 4 lines create a cyclic spinning pattern
-    simulation.addAttractor(Vec2(0.0, -500.0), Vec2(200.0, 0.0), 50.0);
-    simulation.addAttractor(Vec2(0.0, 500.0), Vec2(-200.0, 0.0), 50.0);
-    simulation.addAttractor(Vec2(500.0, 0.0), Vec2(0.0, 200.0), 50.0);
-    simulation.addAttractor(Vec2(-500.0, 0.0), Vec2(0.0, -200.0), 50.0);
+    // simulation.addAttractor(Vec2(0.0, -500.0), Vec2(200.0, 0.0), 50.0);
+    // simulation.addAttractor(Vec2(0.0, 500.0), Vec2(-200.0, 0.0), 50.0);
+    // simulation.addAttractor(Vec2(500.0, 0.0), Vec2(0.0, 200.0), 50.0);
+    // simulation.addAttractor(Vec2(-500.0, 0.0), Vec2(0.0, -200.0), 50.0);
+
+    // The following lines model the solar system
+    // constants
+    double solarMass = 1.9891e30;
+    double massBasis = 1e24;
+    double astronomicalUnit = 149597870700.0;
+    double distanceBasis = 1e9;
+
+    // commonly re-used variables
+    double distance;
+    double velocity;
+    double mass;
+
+    // sun
+    simulation.addAttractor(Vec2(0.0, 0.0), Vec2(0.0, 0.0), solarMass);
+    // mercury
+    distance = astronomicalUnit * 0.38;
+    velocity = 47400;
+    mass = massBasis * 0.330;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // venus
+    distance = astronomicalUnit * 0.72;
+    velocity = 35000;
+    mass = massBasis * 4.87;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // earth
+    distance = astronomicalUnit;
+    velocity = 29800;
+    mass = massBasis * 5.97;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // moon
+    distance += distanceBasis * 0.3844;
+    velocity += 1022.0;
+    mass = massBasis * 0.07346;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // mars
+    distance = astronomicalUnit * 1.52;
+    velocity = 24100;
+    mass = massBasis * 0.642;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // jupiter
+    distance = astronomicalUnit * 5.20;
+    velocity = 13100;
+    mass = massBasis * 1898;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // saturn
+    distance = astronomicalUnit * 9.58;
+    velocity = 9700;
+    mass = massBasis * 568;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // uranus
+    distance = astronomicalUnit * 19.14;
+    velocity = 6800;
+    mass = massBasis * 86.8;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // neptune
+    distance = astronomicalUnit * 30.20;
+    velocity = 5400;
+    mass = massBasis * 102;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
 }
 
 std::chrono::steady_clock::time_point GravitySimApplication::now()
@@ -225,7 +286,7 @@ void GravitySimApplication::handleEvents()
             switch (event.button.button)
             {
             case SDL_BUTTON_LEFT:
-                simulation.addAttractor(worldMousePosition, 50.0);
+                simulation.addAttractor(worldMousePosition, 100.0);
                 break;
             case SDL_BUTTON_RIGHT:
                 simulation.removeAttractor(worldMousePosition);
@@ -325,14 +386,12 @@ void GravitySimApplication::draw()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
 
-    // glDrawElements(GL_LINES, particleCount * 2, GL_UNSIGNED_INT, NULL); - probably DEPRECATED
-    
     glLineWidth(1.5);
     glDrawArrays(GL_LINES, 0, particleCount * 2);
-    // glEnable(GL_PROGRAM_POINT_SIZE);
-    // glEnable(GL_POINT_SMOOTH);
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    glEnable(GL_POINT_SMOOTH);
     glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glPointSize(1.5);
     glDrawArrays(GL_POINTS, 0, particleCount * 2);
 

@@ -10,14 +10,14 @@ Camera::Camera()
     positionApproachQuotient = 5.0;
     motionSpeed = 1.0;
 
-    minScale = 0.00001;
-    maxScale = 10.0;
-    scale = 0.00001;
+    minScale = 1e-15;
+    maxScale = 1e15;
+    scale = 1;
     previousScale = scale;
-    targetScale = 0.001;
-    scaleApproachQuotient = 2.5;
+    targetScale = scale;
+    scaleApproachQuotient = 10.0;
 
-    zoomFactor = 2.5;
+    zoomFactor = 10.0;
 }
 
 void Camera::initializeResolution(int initialDisplayWidth, int initialDisplayHeight)
