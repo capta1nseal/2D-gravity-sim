@@ -9,7 +9,7 @@ class Camera
 public:
     Camera();
 
-    void initializeResolution(int initialDisplayWidth, int initialDisplayHeight);
+    void initializeResolution(unsigned int initialDisplayWidth, unsigned int initialDisplayHeight);
 
     void setInput(Input *inputPtr);
 
@@ -33,6 +33,11 @@ public:
     Vec2 unMapCoordinate(Vec2 coordinate);
     Vec2 unMapCoordinate(Vec2 *coordinate);
 
+    bool isFollowing();
+
+    void startFollowing(Vec2* positionToFollow);
+    void stopFollowing();
+
     void tick(double delta);
 
 private:
@@ -42,6 +47,9 @@ private:
     Vec2 targetPosition;
     double positionApproachQuotient;
     double motionSpeed;
+
+    bool following;
+    Vec2* followingPosition;
 
     double minScale;
     double maxScale;

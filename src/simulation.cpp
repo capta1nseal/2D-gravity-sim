@@ -39,6 +39,7 @@ void GravitySimSimulation::getFrameData(unsigned int &particleCount, std::vector
 {
     std::lock_guard<std::mutex> lock(simulationMutex);
     particles.getFrameData(particleCount, positionArray, previousPositionArray, attractorCount, attractorArray, previousAttractorArray);
+    particles.storePreviousPositions();
 }
 
 void GravitySimSimulation::addAttractor(Vec2 position, double mass)
@@ -55,6 +56,11 @@ void GravitySimSimulation::removeAttractor(Vec2 position)
     particles.removeAttractor(position);
 }
 
+Vec2* GravitySimSimulation::getClosestPositionPointer(Vec2 position)
+{
+    return particles.getClosestPositionPointer(position);
+}
+
 void GravitySimSimulation::storePreviousPositions()
 {
     particles.storePreviousPositions();
@@ -62,7 +68,9 @@ void GravitySimSimulation::storePreviousPositions()
 
 void GravitySimSimulation::initializeParticles()
 {
-    particles.initializeParticles(0, Vec2(-50, -50), Vec2(50, 50), Vec2(0, 0));
+    double astronomicalUnit = 149597870700.0;
+
+    particles.initializeParticles(5e-9, Vec2(2.6 * astronomicalUnit, -0.1 * astronomicalUnit), Vec2(2.8 * astronomicalUnit, 0.1 * astronomicalUnit), Vec2(0.0, 18500.0));
 }
 
 std::chrono::steady_clock::time_point GravitySimSimulation::now()
@@ -72,5 +80,5 @@ std::chrono::steady_clock::time_point GravitySimSimulation::now()
 
 void GravitySimSimulation::tick(double delta)
 {
-    particles.tick(delta);
+    particles.tick(delta * 1e7);
 }

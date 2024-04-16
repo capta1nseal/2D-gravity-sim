@@ -23,15 +23,17 @@ public:
 
     void removeAttractor(Vec2 position);
 
+    Vec2* getClosestPositionPointer(Vec2 position);
+
     void storePreviousPositions();
 
 private:
-    int m_particleCount;
+    unsigned int m_particleCount;
     std::vector<Vec2> m_positionArray;
     std::vector<Vec2> m_previousPositionArray;
     std::vector<Vec2> m_velocityArray;
 
-    int m_attractorCount;
+    unsigned int m_attractorCount;
     std::vector<Attractor> m_attractorArray;
     std::vector<Attractor> m_previousAttractorArray;
     std::vector<Vec2> m_attractorVelocityArray;

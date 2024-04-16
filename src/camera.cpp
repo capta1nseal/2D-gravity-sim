@@ -10,6 +10,9 @@ Camera::Camera()
     positionApproachQuotient = 5.0;
     motionSpeed = 1.0;
 
+    following = false;
+    followingPosition = nullptr;
+
     minScale = 1e-15;
     maxScale = 1e15;
     scale = 2.5e-13;
@@ -20,7 +23,7 @@ Camera::Camera()
     zoomFactor = 10.0;
 }
 
-void Camera::initializeResolution(int initialDisplayWidth, int initialDisplayHeight)
+void Camera::initializeResolution(unsigned int initialDisplayWidth, unsigned int initialDisplayHeight)
 {
     centreVector = Vec2(initialDisplayWidth / 2.0, initialDisplayHeight / 2.0);
 }
@@ -81,7 +84,7 @@ Vec2 Camera::mapPreviousCoordinate(Vec2 coordinate)
 }
 Vec2 Camera::mapPreviousCoordinate(Vec2 *coordinate)
 {
-    Vec2 mappedCoordinate = (*coordinate - previousPosition) * previousScale;
+    Vec2 mappedCoordinate = (*coordinate - position) * previousScale;
     mappedCoordinate.y *= centreVector.x / centreVector.y;
     return mappedCoordinate;
 }
@@ -98,6 +101,25 @@ Vec2 Camera::unMapCoordinate(Vec2 *coordinate)
     );
 
     return mappedCoordinate / scale + position;
+}
+
+bool Camera::isFollowing()
+{
+    return following;
+}
+
+void Camera::startFollowing(Vec2* positionToFollow)
+{
+    if (positionToFollow == nullptr) return;
+
+    followingPosition = positionToFollow;
+    following = true;
+}
+
+void Camera::stopFollowing()
+{
+    following = false;
+    followingPosition = nullptr;
 }
 
 void Camera::tick(double delta)
@@ -117,7 +139,15 @@ void Camera::tick(double delta)
         targetPosition += Vec2(-1.0 * motionSpeed * delta * (1.0 / scale), 0.0);
 
     previousPosition = position;
-    position += (targetPosition - position) * (positionApproachQuotient * delta);
+    if (following)
+    {
+        targetPosition = *followingPosition;
+        position = targetPosition;
+    }
+    else
+    {
+        position += (targetPosition - position) * (positionApproachQuotient * delta);
+    }
     previousScale = scale;
     scale += (targetScale - scale) * scaleApproachQuotient * delta;
 }

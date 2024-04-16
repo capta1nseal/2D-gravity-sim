@@ -46,6 +46,10 @@ void Particles::initializeParticles(double linearDensity, Vec2 topLeft, Vec2 bot
         }
     }
 
+    m_positionArray.resize(m_particleCount);
+    m_previousPositionArray.resize(m_particleCount);
+    m_velocityArray.resize(m_particleCount);
+
     m_attractorCount = 0;
     m_attractorArray.reserve(m_attractorCount);
     m_previousAttractorArray.reserve(m_attractorCount);
@@ -73,22 +77,20 @@ void Particles::getFrameData(unsigned int &particleCount, std::vector<Vec2> &pos
 
 void Particles::tick(double delta)
 {
-    delta *= 1e6;
-
     Vec2 dPos;
     Vec2 force;
     Vec2 acceleration;
 
     for (Attractor currentAttractor : m_attractorArray)
     {
-        for (int j = 0; j < m_particleCount; j++)
+        for (unsigned int j = 0; j < m_particleCount; j++)
         {
             dPos = currentAttractor.position - m_positionArray[j];
             force = dPos * ((6.6743e-11 * currentAttractor.mass * 1.0) / pow(dPos.magnitude(), 3));
             acceleration = force / 1.0;
             m_velocityArray[j] += acceleration * delta;
         }
-        for (int j = 0; j < m_attractorCount; j++)
+        for (unsigned int j = 0; j < m_attractorCount; j++)
         {
             if (currentAttractor.position == m_attractorArray[j].position) continue;
 
@@ -98,11 +100,11 @@ void Particles::tick(double delta)
             m_attractorVelocityArray[j] += acceleration * delta;
         }
     }
-    for (int i = 0; i < m_particleCount; i++)
+    for (unsigned int i = 0; i < m_particleCount; i++)
     {
         m_positionArray[i] += m_velocityArray[i] * delta;
     }
-    for (int i = 0; i < m_attractorCount; i++)
+    for (unsigned int i = 0; i < m_attractorCount; i++)
     {
         m_attractorArray[i].position += m_attractorVelocityArray[i] * delta;
     }
@@ -130,10 +132,11 @@ void Particles::removeAttractor(Vec2 position)
 
     unsigned int closestIndex = 0;
     double closestDistance = INFINITY;
+    double distance;
 
     for (unsigned int i = 0; i < m_attractorCount; i++)
     {
-        double distance = (m_attractorArray[i].position - position).magnitude();
+        distance = (m_attractorArray[i].position - position).magnitude();
         if (distance < closestDistance)
         {
             closestIndex = i;
@@ -142,6 +145,27 @@ void Particles::removeAttractor(Vec2 position)
     }
 
     removeAttractor(closestIndex);
+}
+
+Vec2* Particles::getClosestPositionPointer(Vec2 position)
+{
+    if (m_attractorCount == 0) return nullptr;
+
+    unsigned int closestIndex = 0;
+    double closestDistance = INFINITY;
+    double distance;
+
+    for (unsigned int i = 0; i < m_attractorCount; i++)
+    {
+        distance = (m_attractorArray[i].position - position).magnitude();
+        if (distance < closestDistance)
+        {
+            closestIndex = i;
+            closestDistance = distance;
+        }
+    }
+
+    return &m_attractorArray[closestIndex].position;
 }
 
 void Particles::storePreviousPositions()

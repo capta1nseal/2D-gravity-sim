@@ -18,8 +18,8 @@ GravitySimApplication::GravitySimApplication()
 {
     initializeGraphics();
     initializeInput();
-    initializeSimulation();
     initializeCamera();
+    initializeSimulation();
 }
 GravitySimApplication::~GravitySimApplication()
 {
@@ -48,8 +48,8 @@ void GravitySimApplication::run()
 
         tick(delta.count());
 
-        if (frameCounter % 60 == 0)
-            std::cout << delta.count() << "\n";
+        // if (frameCounter % 60 == 0)
+        //     std::cout << delta.count() << "\n";
 
         draw();
 
@@ -250,6 +250,9 @@ void GravitySimApplication::initializeSimulation()
     velocity = 5400;
     mass = massBasis * 102;
     simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+
+
+    camera.startFollowing(simulation.getClosestPositionPointer(Vec2(0.0, 0.0)));
 }
 
 std::chrono::steady_clock::time_point GravitySimApplication::now()
@@ -278,6 +281,16 @@ void GravitySimApplication::handleEvents()
             case SDL_SCANCODE_ESCAPE:
                 running = false;
                 break;
+            case SDL_SCANCODE_F:
+                if (camera.isFollowing())
+                {
+                    camera.stopFollowing();
+                }
+                else
+                {
+                    Vec2* positionToFollow = simulation.getClosestPositionPointer(worldMousePosition);
+                    camera.startFollowing(positionToFollow);
+                }
             default:
                 break;
             }
@@ -321,9 +334,8 @@ void GravitySimApplication::draw()
     std::vector<Vec2> positionArray, previousPositionArray;
     unsigned int attractorCount;
     std::vector<Attractor> attractorArray, previousAttractorArray;
-
+    
     simulation.getFrameData(particleCount, positionArray, previousPositionArray, attractorCount, attractorArray, previousAttractorArray);
-    simulation.storePreviousPositions();
 
     Vec2 drawPosition;
     Vec2 previousDrawPosition;
@@ -337,8 +349,8 @@ void GravitySimApplication::draw()
 
     for (unsigned int i = 0; i < particleCount; i++)
     {
-        drawPosition.set(camera.mapCoordinate(&positionArray[i]));
-        previousDrawPosition.set(camera.mapPreviousCoordinate(previousPositionArray[i]));
+        drawPosition = camera.mapCoordinate(positionArray[i]);
+        previousDrawPosition = camera.mapPreviousCoordinate(previousPositionArray[i]);
 
         vertexBufferData[i * 4] = static_cast<GLfloat>(drawPosition.x);
         vertexBufferData[i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);
@@ -350,8 +362,8 @@ void GravitySimApplication::draw()
 
     for (unsigned int i = 0; i < attractorCount; i++)
     {
-        drawPosition.set(camera.mapCoordinate(attractorArray[i].position));
-        previousDrawPosition.set(camera.mapPreviousCoordinate(previousAttractorArray[i].position));
+        drawPosition = camera.mapCoordinate(attractorArray[i].position);
+        previousDrawPosition = camera.mapPreviousCoordinate(previousAttractorArray[i].position);
 
         vertexBufferData[attractorBaseIndex + i * 4] = static_cast<GLfloat>(drawPosition.x);
         vertexBufferData[attractorBaseIndex + i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);

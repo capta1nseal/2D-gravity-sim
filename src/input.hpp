@@ -22,7 +22,7 @@ public:
     bool zoomOutPressed();
 
 private:
-    static const int inputArraySize = 6;
+    static const unsigned int inputArraySize = 6;
     std::array<bool, inputArraySize> inputArray;
     const Uint8 *keyboardState;
 };
