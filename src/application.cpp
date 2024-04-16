@@ -19,7 +19,7 @@ GravitySimApplication::GravitySimApplication()
     initializeGraphics();
     initializeInput();
     initializeCamera();
-    initializeSimulation();
+    loadSimulationState();
 }
 GravitySimApplication::~GravitySimApplication()
 {
@@ -180,10 +180,9 @@ void GravitySimApplication::initializeCamera()
     camera.setInput(&input);
 
     camera.initializeResolution(displayWidth, displayHeight);
-    camera.setPosition(Vec2(0.0, 0.0));
 }
 
-void GravitySimApplication::initializeSimulation()
+void GravitySimApplication::loadSimulationState()
 {
     // The following 4 lines create a cyclic spinning pattern
     // simulation.addAttractor(Vec2(0.0, -500.0), Vec2(200.0, 0.0), 50.0);
@@ -191,7 +190,7 @@ void GravitySimApplication::initializeSimulation()
     // simulation.addAttractor(Vec2(500.0, 0.0), Vec2(0.0, 200.0), 50.0);
     // simulation.addAttractor(Vec2(-500.0, 0.0), Vec2(0.0, -200.0), 50.0);
 
-    // The following lines model the solar system
+    // The rest of this function models the solar system
     // constants
     double solarMass = 1.9891e30;
     double massBasis = 1e24;
@@ -250,9 +249,11 @@ void GravitySimApplication::initializeSimulation()
     velocity = 5400;
     mass = massBasis * 102;
     simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
-
+    // asteroid belt
+    simulation.generateParticles(5e-9, Vec2(2.6 * astronomicalUnit, -0.1 * astronomicalUnit), Vec2(2.8 * astronomicalUnit, 0.1 * astronomicalUnit), Vec2(0.0, 18500.0));
 
     camera.startFollowing(simulation.getClosestPositionPointer(Vec2(0.0, 0.0)));
+    camera.setScale(2.5e-13);
 }
 
 std::chrono::steady_clock::time_point GravitySimApplication::now()

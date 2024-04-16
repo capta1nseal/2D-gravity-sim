@@ -12,7 +12,7 @@ class Particles
 public:
     Particles();
 
-    void initializeParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity);
+    void generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity);
 
     void getFrameData(unsigned int &particleCount, std::vector<Vec2> &positionArray, std::vector<Vec2> &previousPositionArray, unsigned int &attractorCount, std::vector<Attractor> &attractorArray, std::vector<Attractor> &previousAttractorArray);
 

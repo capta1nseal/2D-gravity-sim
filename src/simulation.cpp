@@ -7,7 +7,11 @@
 
 GravitySimSimulation::GravitySimSimulation()
 {
-    initializeParticles();
+}
+
+void GravitySimSimulation::generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity)
+{
+    particles.generateParticles(linearDensity, topLeft, bottomRight, initialVelocity);
 }
 
 void GravitySimSimulation::simulationLoop()
@@ -64,13 +68,6 @@ Vec2* GravitySimSimulation::getClosestPositionPointer(Vec2 position)
 void GravitySimSimulation::storePreviousPositions()
 {
     particles.storePreviousPositions();
-}
-
-void GravitySimSimulation::initializeParticles()
-{
-    double astronomicalUnit = 149597870700.0;
-
-    particles.initializeParticles(5e-9, Vec2(2.6 * astronomicalUnit, -0.1 * astronomicalUnit), Vec2(2.8 * astronomicalUnit, 0.1 * astronomicalUnit), Vec2(0.0, 18500.0));
 }
 
 std::chrono::steady_clock::time_point GravitySimSimulation::now()
