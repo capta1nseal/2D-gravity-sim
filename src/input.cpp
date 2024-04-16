@@ -7,7 +7,7 @@
 
 Input::Input()
 {
-    for (int i = 0; i < inputArraySize; i++)
+    for (unsigned int i = 0; i < inputArraySize; i++)
         inputArray[i] = false;
 }
 
@@ -18,7 +18,7 @@ void Input::setKeyboardState(const Uint8 *newKeyboardState)
 
 void Input::updateInputs()
 {
-    for (int i = 0; i < inputArraySize; i++)
+    for (unsigned int i = 0; i < inputArraySize; i++)
         inputArray[i] = false;
     if (keyboardState[SDL_SCANCODE_UP])
         inputArray[0] = true;

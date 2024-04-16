@@ -9,7 +9,7 @@ class Camera
 public:
     Camera();
 
-    void initializeResolution(int initialDisplayWidth, int initialDisplayHeight);
+    void initializeResolution(unsigned int initialDisplayWidth, unsigned int initialDisplayHeight);
 
     void setInput(Input *inputPtr);
 

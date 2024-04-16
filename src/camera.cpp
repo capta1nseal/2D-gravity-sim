@@ -23,7 +23,7 @@ Camera::Camera()
     zoomFactor = 10.0;
 }
 
-void Camera::initializeResolution(int initialDisplayWidth, int initialDisplayHeight)
+void Camera::initializeResolution(unsigned int initialDisplayWidth, unsigned int initialDisplayHeight)
 {
     centreVector = Vec2(initialDisplayWidth / 2.0, initialDisplayHeight / 2.0);
 }

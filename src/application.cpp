@@ -48,8 +48,8 @@ void GravitySimApplication::run()
 
         tick(delta.count());
 
-        if (frameCounter % 60 == 0)
-            std::cout << delta.count() << "\n";
+        // if (frameCounter % 60 == 0)
+        //     std::cout << delta.count() << "\n";
 
         draw();
 
@@ -349,8 +349,8 @@ void GravitySimApplication::draw()
 
     for (unsigned int i = 0; i < particleCount; i++)
     {
-        drawPosition.set(camera.mapCoordinate(&positionArray[i]));
-        previousDrawPosition.set(camera.mapPreviousCoordinate(previousPositionArray[i]));
+        drawPosition = camera.mapCoordinate(positionArray[i]);
+        previousDrawPosition = camera.mapPreviousCoordinate(previousPositionArray[i]);
 
         vertexBufferData[i * 4] = static_cast<GLfloat>(drawPosition.x);
         vertexBufferData[i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);
@@ -362,8 +362,8 @@ void GravitySimApplication::draw()
 
     for (unsigned int i = 0; i < attractorCount; i++)
     {
-        drawPosition.set(camera.mapCoordinate(attractorArray[i].position));
-        previousDrawPosition.set(camera.mapPreviousCoordinate(previousAttractorArray[i].position));
+        drawPosition = camera.mapCoordinate(attractorArray[i].position);
+        previousDrawPosition = camera.mapPreviousCoordinate(previousAttractorArray[i].position);
 
         vertexBufferData[attractorBaseIndex + i * 4] = static_cast<GLfloat>(drawPosition.x);
         vertexBufferData[attractorBaseIndex + i * 4 + 1] = static_cast<GLfloat>(drawPosition.y);
