@@ -10,6 +10,8 @@ class GravitySimSimulation
 public:
     GravitySimSimulation();
 
+    void generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity);
+
     void simulationLoop();
 
     void stop();
@@ -33,8 +35,6 @@ private:
     Particles particles;
 
     std::mutex simulationMutex;
-
-    void initializeParticles();
 
     std::chrono::steady_clock::time_point now();
 

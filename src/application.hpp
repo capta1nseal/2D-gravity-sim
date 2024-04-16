@@ -59,7 +59,7 @@ private:
 
     void initializeCamera();
 
-    void initializeSimulation();
+    void loadSimulationState();
 
     std::chrono::steady_clock::time_point now();
 

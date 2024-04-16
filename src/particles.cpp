@@ -6,24 +6,20 @@
 #include "vec2.hpp"
 #include "attractor.hpp"
 
-Particles::Particles() {}
-
-void Particles::initializeParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity)
+Particles::Particles()
 {
-    if (linearDensity == 0)
-    {
-        m_particleCount = 0;
-        m_positionArray.reserve(m_particleCount);
-        m_previousPositionArray.reserve(m_particleCount);
-        m_velocityArray.reserve(m_particleCount);
-        m_attractorCount = 0;
-        m_attractorArray.reserve(m_attractorCount);
-        m_previousAttractorArray.reserve(m_attractorCount);
-        m_attractorVelocityArray.reserve(m_attractorCount);
-
-        return;
-    }
     m_particleCount = 0;
+    m_positionArray.reserve(m_particleCount);
+    m_previousPositionArray.reserve(m_particleCount);
+    m_velocityArray.reserve(m_particleCount);
+    m_attractorCount = 0;
+    m_attractorArray.reserve(m_attractorCount);
+    m_previousAttractorArray.reserve(m_attractorCount);
+    m_attractorVelocityArray.reserve(m_attractorCount);
+}
+
+void Particles::generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity)
+{
     for (double x = topLeft.x; x < bottomRight.x; x += 1.0 / linearDensity)
     {
         for (double y = topLeft.y; y < bottomRight.y; y += 1.0 / linearDensity)
@@ -45,15 +41,6 @@ void Particles::initializeParticles(double linearDensity, Vec2 topLeft, Vec2 bot
             m_velocityArray.push_back(initialVelocity);
         }
     }
-
-    m_positionArray.resize(m_particleCount);
-    m_previousPositionArray.resize(m_particleCount);
-    m_velocityArray.resize(m_particleCount);
-
-    m_attractorCount = 0;
-    m_attractorArray.reserve(m_attractorCount);
-    m_previousAttractorArray.reserve(m_attractorCount);
-    m_attractorVelocityArray.reserve(m_attractorCount);
 }
 
 void Particles::getFrameData(unsigned int &particleCount, std::vector<Vec2> &positionArray, std::vector<Vec2> &previousPositionArray, unsigned int &attractorCount, std::vector<Attractor> &attractorArray, std::vector<Attractor> &previousAttractorArray)
