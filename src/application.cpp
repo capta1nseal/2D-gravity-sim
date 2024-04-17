@@ -162,7 +162,12 @@ void GravitySimApplication::initializeGraphics()
 }
 void GravitySimApplication::destroyGraphics()
 {
+    glDeleteBuffers(1, &gVBO);
+    glDeleteBuffers(1, &gIBO);
+
     glDeleteProgram(gProgramID);
+
+    SDL_GL_DeleteContext(gContext);
 
     SDL_DestroyWindow(window);
     window = NULL;
@@ -252,6 +257,8 @@ void GravitySimApplication::loadSimulationState()
     // asteroid belt
     simulation.generateParticles(5e-9, Vec2(2.6 * astronomicalUnit, -0.1 * astronomicalUnit), Vec2(2.8 * astronomicalUnit, 0.1 * astronomicalUnit), Vec2(0.0, 18500.0));
 
+    simulation.setTimeScale(1e7);
+
     camera.startFollowing(simulation.getClosestPositionPointer(Vec2(0.0, 0.0)));
     camera.setScale(2.5e-13);
 }
@@ -292,6 +299,13 @@ void GravitySimApplication::handleEvents()
                     Vec2* positionToFollow = simulation.getClosestPositionPointer(worldMousePosition);
                     camera.startFollowing(positionToFollow);
                 }
+                break;
+            case SDL_SCANCODE_HOME:
+                simulation.increaseTimeScale(2.0);
+                break;
+            case SDL_SCANCODE_END:
+                simulation.decreaseTimeScale(2.0);
+                break;
             default:
                 break;
             }

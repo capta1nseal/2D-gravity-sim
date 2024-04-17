@@ -62,6 +62,15 @@ void Particles::getFrameData(unsigned int &particleCount, std::vector<Vec2> &pos
     previousAttractorArray = m_previousAttractorArray;
 }
 
+void Particles::storePreviousPositions()
+{
+    m_previousPositionArray.resize(m_particleCount);
+    m_previousAttractorArray.resize(m_attractorCount);
+
+    m_previousPositionArray = m_positionArray;
+    m_previousAttractorArray = m_attractorArray;
+}
+
 void Particles::tick(double delta)
 {
     Vec2 dPos;
@@ -153,15 +162,6 @@ Vec2* Particles::getClosestPositionPointer(Vec2 position)
     }
 
     return &m_attractorArray[closestIndex].position;
-}
-
-void Particles::storePreviousPositions()
-{
-    m_previousPositionArray.resize(m_particleCount);
-    m_previousAttractorArray.resize(m_attractorCount);
-
-    m_previousPositionArray = m_positionArray;
-    m_previousAttractorArray = m_attractorArray;
 }
 
 void Particles::removeAttractor(unsigned int index)

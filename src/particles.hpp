@@ -16,6 +16,8 @@ public:
 
     void getFrameData(unsigned int &particleCount, std::vector<Vec2> &positionArray, std::vector<Vec2> &previousPositionArray, unsigned int &attractorCount, std::vector<Attractor> &attractorArray, std::vector<Attractor> &previousAttractorArray);
 
+    void storePreviousPositions();
+
     void tick(double delta);
 
     void addAttractor(Vec2 position, double mass);
@@ -24,9 +26,6 @@ public:
     void removeAttractor(Vec2 position);
 
     Vec2* getClosestPositionPointer(Vec2 position);
-
-    void storePreviousPositions();
-
 private:
     unsigned int m_particleCount;
     std::vector<Vec2> m_positionArray;
