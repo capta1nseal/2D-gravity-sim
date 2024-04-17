@@ -254,6 +254,11 @@ void GravitySimApplication::loadSimulationState()
     velocity = 5400;
     mass = massBasis * 102;
     simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
+    // pluto
+    distance = astronomicalUnit * 39;
+    velocity = 4750;
+    mass = 1.30900e22;
+    simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
     // asteroid belt
     simulation.generateParticles(5e-9, Vec2(2.6 * astronomicalUnit, -0.1 * astronomicalUnit), Vec2(2.8 * astronomicalUnit, 0.1 * astronomicalUnit), Vec2(0.0, 18500.0));
 
