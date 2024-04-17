@@ -341,7 +341,6 @@ void GravitySimApplication::draw()
     Vec2 drawPosition;
     Vec2 previousDrawPosition;
 
-    glGenBuffers(1, &gVBO);
     glBindBuffer(GL_ARRAY_BUFFER, gVBO);
 
     glBufferData(GL_ARRAY_BUFFER, (particleCount + attractorCount) * 2 * 2 * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
@@ -374,7 +373,6 @@ void GravitySimApplication::draw()
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
-    glGenBuffers(1, &gIBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);
 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (particleCount + attractorCount) * 2 * sizeof(GLuint), nullptr, GL_STATIC_DRAW);
