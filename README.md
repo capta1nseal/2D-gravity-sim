@@ -27,8 +27,9 @@ Run the binary, and the program will automatically run in fullscreen. You can ex
 
 Controls are as follows:
 - ´´´Arrow keys´´´ for moving the camera.
-- ´´´+ / -´´´ for zooming in/out. Will zoom further when held. May be mapped incorrectly for your keyboard.
+- ´´´PG UP / PG DN´´´ for zooming in/out. Will zoom further when held.
+- ´´´HOME / END´´´ for increasing or decreasing the time scale of the simulation. (WARNING: VERY UNSTABLE AT HIGH SPEED)
 - ´´´LClick´´´ for adding a particle at the mouse.
 - ´´´RClick´´´ for removing the nearest particle to the mouse.
-- ´´´Esc´´´ to close the program
-- ´´´F´´´ to start following particle nearest to mouse, or stop following currently followed particle;
+- ´´´Esc´´´ to close the program.
+- ´´´F´´´ to start following particle nearest to mouse, or stop following currently followed particle.

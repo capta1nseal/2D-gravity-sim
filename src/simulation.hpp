@@ -18,6 +18,8 @@ public:
 
     void getFrameData(unsigned int &particleCount, std::vector<Vec2> &positionArray, std::vector<Vec2> &previousPositionArray, unsigned int &attractorCount, std::vector<Attractor> &attractorArray, std::vector<Attractor> &previousAttractorArray);
 
+    void storePreviousPositions();
+
     void addAttractor(Vec2 position, double mass);
     void addAttractor(Vec2 position, Vec2 velocity, double mass);
 
@@ -25,10 +27,16 @@ public:
 
     Vec2* getClosestPositionPointer(Vec2 position);
 
-    void storePreviousPositions();
+    void setTimeScale(double newTimeScale);
+    double getTimeScale();
+
+    void increaseTimeScale(double factor);
+    void decreaseTimeScale(double factor);
 
 private:
     bool running;
+
+    double timeScale;
 
     // double tickRate;
 

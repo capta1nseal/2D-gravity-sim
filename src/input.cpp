@@ -28,9 +28,9 @@ void Input::updateInputs()
         inputArray[2] = true;
     if (keyboardState[SDL_SCANCODE_LEFT])
         inputArray[3] = true;
-    if (keyboardState[45])
+    if (keyboardState[SDL_SCANCODE_PAGEUP])
         inputArray[4] = true;
-    if (keyboardState[56])
+    if (keyboardState[SDL_SCANCODE_PAGEDOWN])
         inputArray[5] = true;
 }
 
@@ -40,4 +40,3 @@ bool Input::downPressed() { return inputArray[2]; }
 bool Input::leftPressed() { return inputArray[3]; }
 bool Input::zoomInPressed() { return inputArray[4]; }
 bool Input::zoomOutPressed() { return inputArray[5]; }
-

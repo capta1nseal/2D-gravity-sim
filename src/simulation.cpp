@@ -7,6 +7,7 @@
 
 GravitySimSimulation::GravitySimSimulation()
 {
+    timeScale = 1.0;
 }
 
 void GravitySimSimulation::generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity)
@@ -46,6 +47,11 @@ void GravitySimSimulation::getFrameData(unsigned int &particleCount, std::vector
     particles.storePreviousPositions();
 }
 
+void GravitySimSimulation::storePreviousPositions()
+{
+    particles.storePreviousPositions();
+}
+
 void GravitySimSimulation::addAttractor(Vec2 position, double mass)
 {
     particles.addAttractor(position, mass);
@@ -65,9 +71,22 @@ Vec2* GravitySimSimulation::getClosestPositionPointer(Vec2 position)
     return particles.getClosestPositionPointer(position);
 }
 
-void GravitySimSimulation::storePreviousPositions()
+void GravitySimSimulation::setTimeScale(double newTimeScale)
 {
-    particles.storePreviousPositions();
+    timeScale = newTimeScale;
+}
+double GravitySimSimulation::getTimeScale()
+{
+    return timeScale;
+}
+
+void GravitySimSimulation::increaseTimeScale(double factor)
+{
+    timeScale *= factor;
+}
+void GravitySimSimulation::decreaseTimeScale(double factor)
+{
+    timeScale /= factor;
 }
 
 std::chrono::steady_clock::time_point GravitySimSimulation::now()
@@ -77,5 +96,5 @@ std::chrono::steady_clock::time_point GravitySimSimulation::now()
 
 void GravitySimSimulation::tick(double delta)
 {
-    particles.tick(delta * 1e7);
+    particles.tick(delta * timeScale);
 }
