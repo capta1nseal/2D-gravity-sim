@@ -260,7 +260,11 @@ void GravitySimApplication::loadSimulationState()
     mass = 1.30900e22;
     simulation.addAttractor(Vec2(distance, 0.0), Vec2(0.0, -velocity), mass);
     // asteroid belt
-    simulation.generateParticles(5e-9, Vec2(2.6 * astronomicalUnit, -0.1 * astronomicalUnit), Vec2(2.8 * astronomicalUnit, 0.1 * astronomicalUnit), Vec2(0.0, 18500.0));
+    distance = 2.6 * astronomicalUnit;
+    simulation.generateParticles(5e-10, Vec2(distance, -0.1 * astronomicalUnit), Vec2(distance + 0.2 * astronomicalUnit, 0.1 * astronomicalUnit), Vec2(0.0, 18500.0));
+    simulation.generateParticles(5e-10, Vec2(-0.1 * astronomicalUnit, distance), Vec2(0.1 * astronomicalUnit, distance + 0.2 * astronomicalUnit), Vec2(-18500.0, 0.0));
+    simulation.generateParticles(5e-10, Vec2(-distance - 0.2 * astronomicalUnit, -0.1 * astronomicalUnit), Vec2(-distance, 0.1 * astronomicalUnit), Vec2(0.0, -18500.0));
+    simulation.generateParticles(5e-10, Vec2(-0.1 * astronomicalUnit, -distance - 0.2 * astronomicalUnit), Vec2(0.1 * astronomicalUnit, -distance), Vec2(18500.0, 0.0));
 
     simulation.setTimeScale(1e7);
 
