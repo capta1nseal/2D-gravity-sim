@@ -17,20 +17,9 @@ struct Vec2
     void set(Vec2 other);
     void set(Vec2 *other);
 
-    void add(Vec2 other);
-    void add(Vec2 *other);
-    Vec2 addInplace(Vec2 *other);
-
-    void subtract(Vec2 other);
-    void subtract(Vec2 *other);
-    Vec2 subtractInplace(Vec2 *other);
-
-    void scale(double scalar);
-    Vec2 scaleInplace(double scalar);
-
     Vec2 towardsInplace(Vec2 other, double scalar);
 
-    Vec2 normaliseInplace(double scalar);
+    Vec2 normaliseInplace(double scalar = 1.0);
 
     double magnitude();
 
@@ -46,18 +35,5 @@ struct Vec2
 
     void operator+=(Vec2 const& other);
 };
-
-Vec2 addVec2(Vec2 first, Vec2 second);
-Vec2 addVec2(Vec2 first, Vec2 *second);
-Vec2 addVec2(Vec2 *first, Vec2 second);
-Vec2 addVec2(Vec2 *first, Vec2 *second);
-
-Vec2 subtractVec2(Vec2 first, Vec2 second);
-Vec2 subtractVec2(Vec2 first, Vec2 *second);
-Vec2 subtractVec2(Vec2 *first, Vec2 second);
-Vec2 subtractVec2(Vec2 *first, Vec2 *second);
-
-Vec2 scaleVec2(Vec2 vector, double scalar);
-Vec2 scaleVec2(Vec2 *vector, double scalar);
 
 #endif

@@ -1,4 +1,4 @@
-#include "attractor.hpp"
+#include "particle.hpp"
 
 #include "vec2.hpp"
 
@@ -12,11 +12,11 @@ Attractor::Attractor(Vec2 initialPosition, double initialMass)
 
 double Attractor::distanceFrom(Vec2 otherPosition)
 {
-    return subtractVec2(&position, &otherPosition).magnitude();
+    return (position - otherPosition).magnitude();
 }
 double Attractor::distanceFrom(Vec2 *otherPosition)
 {
-    return subtractVec2(&position, otherPosition).magnitude();
+    return (position - *otherPosition).magnitude();
 }
 double Attractor::distanceFrom(Attractor otherAttractor)
 {

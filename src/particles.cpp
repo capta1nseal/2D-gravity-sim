@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "vec2.hpp"
-#include "attractor.hpp"
+#include "particle.hpp"
 
 Particles::Particles()
 {
