@@ -3,18 +3,20 @@
 
 #include "vec2.hpp"
 
-struct Attractor
+struct Particle
 {
     Vec2 position;
+    Vec2 velocity;
     double mass;
 
-    Attractor();
-    Attractor(Vec2 initialPosition, double initialMass);
+    Particle();
+    Particle(Vec2 initialPosition, double initialMass);
+    Particle(Vec2 initialPosition, Vec2 initialVelocity, double initialMass);
     
     double distanceFrom(Vec2 otherPosition);
     double distanceFrom(Vec2 *otherPosition);
-    double distanceFrom(Attractor otherAttractor);
-    double distanceFrom(Attractor *otherAttractor);
+    double distanceFrom(Particle otherAttractor);
+    double distanceFrom(Particle *otherAttractor);
 };
 
 #endif

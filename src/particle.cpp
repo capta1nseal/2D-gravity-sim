@@ -2,27 +2,30 @@
 
 #include "vec2.hpp"
 
-Attractor::Attractor()
+Particle::Particle()
 {
     mass = 50.0;
 }
-Attractor::Attractor(Vec2 initialPosition, double initialMass)
+Particle::Particle(Vec2 initialPosition, double initialMass)
     : position(initialPosition), mass(initialMass)
 {}
+Particle::Particle(Vec2 initialPosition, Vec2 initialVelocity, double initialMass)
+    : position(initialPosition), velocity(initialVelocity), mass(initialMass)
+{}
 
-double Attractor::distanceFrom(Vec2 otherPosition)
+double Particle::distanceFrom(Vec2 otherPosition)
 {
     return (position - otherPosition).magnitude();
 }
-double Attractor::distanceFrom(Vec2 *otherPosition)
+double Particle::distanceFrom(Vec2 *otherPosition)
 {
     return (position - *otherPosition).magnitude();
 }
-double Attractor::distanceFrom(Attractor otherAttractor)
+double Particle::distanceFrom(Particle otherAttractor)
 {
     return distanceFrom(otherAttractor.position);
 }
-double Attractor::distanceFrom(Attractor *otherAttractor)
+double Particle::distanceFrom(Particle *otherAttractor)
 {
     return distanceFrom(otherAttractor->position);
 }

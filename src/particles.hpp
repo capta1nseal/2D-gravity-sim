@@ -14,7 +14,7 @@ public:
 
     void generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity);
 
-    void getFrameData(unsigned int &particleCount, std::vector<Vec2> &positionArray, std::vector<Vec2> &previousPositionArray, unsigned int &attractorCount, std::vector<Attractor> &attractorArray, std::vector<Attractor> &previousAttractorArray);
+    void getFrameData(unsigned int &attractorCount, std::vector<Particle> &attractorArray, std::vector<Particle> &previousAttractorArray);
 
     void storePreviousPositions();
 
@@ -27,15 +27,9 @@ public:
 
     Vec2* getClosestPositionPointer(Vec2 position);
 private:
-    unsigned int m_particleCount;
-    std::vector<Vec2> m_positionArray;
-    std::vector<Vec2> m_previousPositionArray;
-    std::vector<Vec2> m_velocityArray;
-
     unsigned int m_attractorCount;
-    std::vector<Attractor> m_attractorArray;
-    std::vector<Attractor> m_previousAttractorArray;
-    std::vector<Vec2> m_attractorVelocityArray;
+    std::vector<Particle> m_particleArray;
+    std::vector<Particle> m_previousParticleArray;
 
     void removeAttractor(unsigned int index);
 };

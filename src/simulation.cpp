@@ -40,10 +40,10 @@ void GravitySimSimulation::stop()
     running = false;
 }
 
-void GravitySimSimulation::getFrameData(unsigned int &particleCount, std::vector<Vec2> &positionArray, std::vector<Vec2> &previousPositionArray, unsigned int &attractorCount, std::vector<Attractor> &attractorArray, std::vector<Attractor> &previousAttractorArray)
+void GravitySimSimulation::getFrameData(unsigned int &attractorCount, std::vector<Particle> &attractorArray, std::vector<Particle> &previousAttractorArray)
 {
     std::lock_guard<std::mutex> lock(simulationMutex);
-    particles.getFrameData(particleCount, positionArray, previousPositionArray, attractorCount, attractorArray, previousAttractorArray);
+    particles.getFrameData(attractorCount, attractorArray, previousAttractorArray);
     particles.storePreviousPositions();
 }
 

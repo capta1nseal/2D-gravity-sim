@@ -3,19 +3,16 @@
 #include <vector>
 #include <cmath>
 
+#include <iostream>
+
 #include "vec2.hpp"
 #include "particle.hpp"
 
 Particles::Particles()
 {
-    m_particleCount = 0;
-    m_positionArray.reserve(m_particleCount);
-    m_previousPositionArray.reserve(m_particleCount);
-    m_velocityArray.reserve(m_particleCount);
     m_attractorCount = 0;
-    m_attractorArray.reserve(m_attractorCount);
-    m_previousAttractorArray.reserve(m_attractorCount);
-    m_attractorVelocityArray.reserve(m_attractorCount);
+    m_particleArray.reserve(m_attractorCount);
+    m_previousParticleArray.reserve(m_attractorCount);
 }
 
 void Particles::generateParticles(double linearDensity, Vec2 topLeft, Vec2 bottomRight, Vec2 initialVelocity)
@@ -24,85 +21,67 @@ void Particles::generateParticles(double linearDensity, Vec2 topLeft, Vec2 botto
     {
         for (double y = topLeft.y; y < bottomRight.y; y += 1.0 / linearDensity)
         {
-            m_particleCount += 1;
+            m_attractorCount += 1;
         }
     }
 
-    m_positionArray.reserve(m_particleCount);
-    m_previousPositionArray.reserve(m_particleCount);
-    m_velocityArray.reserve(m_particleCount);
+    m_particleArray.reserve(m_attractorCount);
+    m_previousParticleArray.reserve(m_attractorCount);
 
     for (double x = topLeft.x; x < bottomRight.x; x += 1.0 / linearDensity)
     {
         for (double y = topLeft.y; y < bottomRight.y; y += 1.0 / linearDensity)
         {
-            m_positionArray.push_back(Vec2(x, y));
-            m_previousPositionArray.push_back(Vec2(x, y));
-            m_velocityArray.push_back(initialVelocity);
+            m_particleArray.push_back(Particle(Vec2(x, y), initialVelocity, 0.0));
+            m_previousParticleArray.push_back(Particle(Vec2(x, y), initialVelocity, 0.0));
         }
     }
 }
 
-void Particles::getFrameData(unsigned int &particleCount, std::vector<Vec2> &positionArray, std::vector<Vec2> &previousPositionArray, unsigned int &attractorCount, std::vector<Attractor> &attractorArray, std::vector<Attractor> &previousAttractorArray)
+void Particles::getFrameData(unsigned int &attractorCount, std::vector<Particle> &attractorArray, std::vector<Particle> &previousAttractorArray)
 {
-    particleCount = m_particleCount;
-    
-    positionArray.resize(particleCount);
-    previousPositionArray.resize(particleCount);
-
-    positionArray = m_positionArray;
-    previousPositionArray = m_previousPositionArray;
-
     attractorCount = m_attractorCount;
 
     attractorArray.resize(attractorCount);
     previousAttractorArray.resize(attractorCount);
 
-    attractorArray = m_attractorArray;
-    previousAttractorArray = m_previousAttractorArray;
+    attractorArray = m_particleArray;
+    previousAttractorArray = m_previousParticleArray;
 }
 
 void Particles::storePreviousPositions()
 {
-    m_previousPositionArray.resize(m_particleCount);
-    m_previousAttractorArray.resize(m_attractorCount);
-
-    m_previousPositionArray = m_positionArray;
-    m_previousAttractorArray = m_attractorArray;
+    m_previousParticleArray.resize(m_attractorCount);
+    m_previousParticleArray = m_particleArray;
 }
 
 void Particles::tick(double delta)
 {
+    double mass;
     Vec2 dPos;
     Vec2 force;
     Vec2 acceleration;
 
-    for (Attractor currentAttractor : m_attractorArray)
+    for (Particle currentAttractor : m_particleArray)
     {
-        for (unsigned int j = 0; j < m_particleCount; j++)
-        {
-            dPos = currentAttractor.position - m_positionArray[j];
-            force = dPos * ((6.6743e-11 * currentAttractor.mass * 1.0) / pow(dPos.magnitude(), 3));
-            acceleration = force / 1.0;
-            m_velocityArray[j] += acceleration * delta;
-        }
+        if (currentAttractor.mass == 0.0) continue;
+
         for (unsigned int j = 0; j < m_attractorCount; j++)
         {
-            if (currentAttractor.position == m_attractorArray[j].position) continue;
+            if (m_particleArray[j].mass == 0.0) mass = 1.0;
+            else mass = m_particleArray[j].mass;
 
-            dPos = currentAttractor.position - m_attractorArray[j].position;
-            force = dPos * ((6.6743e-11 * currentAttractor.mass * m_attractorArray[j].mass) / pow(dPos.magnitude(), 3));
-            acceleration = force / m_attractorArray[j].mass;
-            m_attractorVelocityArray[j] += acceleration * delta;
+            if (currentAttractor.position == m_particleArray[j].position) continue;
+
+            dPos = currentAttractor.position - m_particleArray[j].position;
+            force = dPos * ((6.6743e-11 * currentAttractor.mass * mass) / pow(dPos.magnitude(), 3));
+            acceleration = force / mass;
+            m_particleArray[j].velocity += acceleration * delta;
         }
-    }
-    for (unsigned int i = 0; i < m_particleCount; i++)
-    {
-        m_positionArray[i] += m_velocityArray[i] * delta;
     }
     for (unsigned int i = 0; i < m_attractorCount; i++)
     {
-        m_attractorArray[i].position += m_attractorVelocityArray[i] * delta;
+        m_particleArray[i].position += m_particleArray[i].velocity * delta;
     }
 }
 
@@ -113,13 +92,11 @@ void Particles::addAttractor(Vec2 position, double mass)
 void Particles::addAttractor(Vec2 position, Vec2 velocity, double mass)
 {
     m_attractorCount++;
-    m_attractorArray.reserve(m_attractorCount);
-    m_previousAttractorArray.reserve(m_attractorCount);
-    m_attractorVelocityArray.reserve(m_attractorCount);
+    m_particleArray.reserve(m_attractorCount);
+    m_previousParticleArray.reserve(m_attractorCount);
 
-    m_attractorArray.push_back(Attractor(position, mass));
-    m_previousAttractorArray.push_back(Attractor(position, mass));
-    m_attractorVelocityArray.push_back(velocity);
+    m_particleArray.push_back(Particle(position, velocity, mass));
+    m_previousParticleArray.push_back(Particle(position, velocity, mass));
 }
 
 void Particles::removeAttractor(Vec2 position)
@@ -132,7 +109,7 @@ void Particles::removeAttractor(Vec2 position)
 
     for (unsigned int i = 0; i < m_attractorCount; i++)
     {
-        distance = (m_attractorArray[i].position - position).magnitude();
+        distance = (m_particleArray[i].position - position).magnitude();
         if (distance < closestDistance)
         {
             closestIndex = i;
@@ -153,7 +130,7 @@ Vec2* Particles::getClosestPositionPointer(Vec2 position)
 
     for (unsigned int i = 0; i < m_attractorCount; i++)
     {
-        distance = (m_attractorArray[i].position - position).magnitude();
+        distance = (m_particleArray[i].position - position).magnitude();
         if (distance < closestDistance)
         {
             closestIndex = i;
@@ -161,18 +138,16 @@ Vec2* Particles::getClosestPositionPointer(Vec2 position)
         }
     }
 
-    return &m_attractorArray[closestIndex].position;
+    return &m_particleArray[closestIndex].position;
 }
 
 void Particles::removeAttractor(unsigned int index)
 {
     m_attractorCount -= 1;
 
-    m_attractorArray.erase(m_attractorArray.begin() + index);
-    m_previousAttractorArray.erase(m_previousAttractorArray.begin() + index);
-    m_attractorVelocityArray.erase(m_attractorVelocityArray.begin() + index);
+    m_particleArray.erase(m_particleArray.begin() + index);
+    m_previousParticleArray.erase(m_previousParticleArray.begin() + index);
 
-    m_attractorArray.resize(m_attractorCount);
-    m_previousAttractorArray.resize(m_attractorCount);
-    m_attractorVelocityArray.resize(m_attractorCount);
+    m_particleArray.resize(m_attractorCount);
+    m_previousParticleArray.resize(m_attractorCount);
 }
